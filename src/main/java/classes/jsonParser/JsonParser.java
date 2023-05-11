@@ -17,7 +17,7 @@ import java.util.Scanner;
 
 public class JsonParser {
     private static Path path;
-    private final Type collectionType = new TypeToken<Hashtable<Integer, StudyGroup>>() {
+    private static final Type collectionType = new TypeToken<Hashtable<Integer, StudyGroup>>() {
     }.getType();
 
     /**
@@ -66,52 +66,31 @@ public class JsonParser {
     }
 
     /**
-     * Reading file
-     *
-     * @param path path to file
-     * @return file data in char[]
-     */
-    public char[] read(Path path) {
-        InputStreamReader reader;
-        File file;
-
-        while (true) {
-            try {
-                file = new File(path.toUri());
-                reader = new InputStreamReader(new FileInputStream(file));
-                char[] fileContent = new char[(int) file.length()];
-                reader.read(fileContent);
-                reader.close();
-                return fileContent;
-            } catch (IOException e) {
-                System.out.println("Не получилось прочитать файл");
-                path = requestFilePath();
-            }
-        }
-    }
-
-    /**
      * Deserializing json
      *
      * @return Hashtable of StudyGroup objects
      */
-    public Hashtable<Integer, StudyGroup> collectionFromJson(String[] args) {
+    public static Hashtable<Integer, StudyGroup> readJson(Path path) {
+        File file = new File(path.toUri());
+        try {
+            InputStreamReader reader = new InputStreamReader(new FileInputStream(file));
+            char[] fileContent = new char[(int) file.length()];
+            reader.read(fileContent);
+            reader.close();
+            String jsonString = String.valueOf(fileContent);
 
-        if (args.length != 0) {
-            path = Paths.get(args[0]);
-        } else {
-            System.out.println("Пожалуйста, укажите путь к файлу");
-            path = requestFilePath();
+            GsonBuilder builder = new GsonBuilder();
+            builder.registerTypeAdapter(collectionType, new HashTableSerializer());
+            Gson gson = builder.create();
+
+            return gson.fromJson(jsonString, collectionType);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
-        char[] fileContent = read(path);
-        String jsonString = String.valueOf(fileContent);
 
-        GsonBuilder builder = new GsonBuilder();
-        builder.registerTypeAdapter(collectionType, new HashTableSerializer());
-        Gson gson = builder.create();
-
-        return gson.fromJson(jsonString, collectionType);
     }
 
     /**
@@ -119,32 +98,16 @@ public class JsonParser {
      *
      * @param collection collection of StudyGroup
      */
-    public void writeJson(Hashtable<Integer, StudyGroup> collection) {
+    public static void writeJson(Hashtable<Integer, StudyGroup> collection, Path file) throws IOException {
         GsonBuilder builder = new GsonBuilder();
         builder.registerTypeAdapter(StudyGroup.class, new StudyGroupJsonSerializer());
         builder.registerTypeAdapter(Coordinates.class, new CoordinatesJsonSerializer());
         Gson gson = builder.create();
         String collectionJsonString = gson.toJson(collection, collectionType);
-        writeToFile(collectionJsonString);
+
+        PrintWriter out = new PrintWriter(new FileWriter(path.toFile()));
+        out.write(collectionJsonString);
+        out.close();
     }
 
-    /**
-     * Writing String to file
-     *
-     * @param jsonString string of serialized collection
-     */
-    private void writeToFile(String jsonString) {
-        while (true) {
-            try {
-                if (!Files.exists(path)) Files.createFile(path);
-                PrintWriter out = new PrintWriter(new FileWriter(path.toFile()));
-                out.write(jsonString);
-                out.close();
-                break;
-            } catch (IOException e) {
-                System.out.println("не удалось записать данные в этот файл. Введите путь к другому файлу!");
-                path = requestFilePath();
-            }
-        }
-    }
 }

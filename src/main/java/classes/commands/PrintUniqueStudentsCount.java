@@ -1,41 +1,46 @@
 package classes.commands;
 
+import classes.shells.ArgsShell;
+import classes.shells.Response;
 import exceptions.NotEnoughArgumentsException;
 import exceptions.NotEnoughLinesException;
 import exceptions.WrongArgumentException;
 import classes.utils.CollectionManager;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.util.Set;
 
 /**
  * Command to display all unique values of students_count param
  */
 
-public class PrintUniqueStudentsCount extends AbstractCommand{
-    public PrintUniqueStudentsCount(){
+public class PrintUniqueStudentsCount extends AbstractCommand {
+    public PrintUniqueStudentsCount() {
         this.name = "print_unique_students_count";
         this.description = "вывести уникальные значения \"students count\"";
     }
 
+
     @Override
-    public void execute(String[] args, CollectionManager collectionManager) throws NotEnoughArgumentsException, WrongArgumentException {
-        Set<Long> uniqueCounts = collectionManager.getUniqueStudentsCount();
-        System.out.println("Все уникальные значения \"students count\": ");
+    public Response execute(CollectionManager collectionManager, ArgsShell args) throws NotEnoughArgumentsException, WrongArgumentException {
+        Response response = new Response("Все уникальные значения \"students count\": ");
         int index = 0;
-        for (Long count: uniqueCounts){
-            System.out.print(count);
-            if(++index < uniqueCounts.size()){
-                System.out.print(",");
+        Set<Long> uniqueCounts = collectionManager.getUniqueStudentsCount();
+        StringBuilder output = new StringBuilder();
+        for (Long count : uniqueCounts) {
+            output.append(count.toString());
+            if (++index < uniqueCounts.size()) {
+                output.append(",");
             }
-            System.out.print(" ");
+            output.append(" ");
         }
-        System.out.println();
+        response.setData(output.toString());
+        collectionManager.addToHistory(this);
+        return response;
     }
 
     @Override
     public void executeFromFile(BufferedReader reader, String[] args, CollectionManager collectionManager) throws NotEnoughLinesException, WrongArgumentException, NotEnoughArgumentsException {
-        execute(args, collectionManager);
+
     }
 }

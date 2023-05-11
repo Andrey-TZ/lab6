@@ -1,5 +1,7 @@
 package classes.commands;
 
+import classes.shells.ArgsShell;
+import classes.shells.Response;
 import exceptions.NotEnoughArgumentsException;
 import exceptions.NotEnoughLinesException;
 import exceptions.WrongArgumentException;
@@ -17,26 +19,20 @@ public class RemoveLowerKey extends AbstractCommand implements IsNeedInput{
         this.description = "удалить элементы, ключ которых меньше, чем заданный";
     }
 
+
+
     @Override
-    public void execute(String[] args, CollectionManager collectionManager) throws NotEnoughArgumentsException, WrongArgumentException {
-        if(args.length < 2) throw new NotEnoughArgumentsException("команда требует аргумент \"key\"");
-        int key;
-        try{
-            key = Integer.parseInt(args[1]);
-        }
-        catch (NumberFormatException e){
-            throw new WrongArgumentException("аргумент должен быть числом!");
-        }
-        collectionManager.removeLowerKey(key);
-        System.out.print("Элемент с ключом \"");
-        System.out.print(key);
-        System.out.println("\" успешно удалён");
+    public Response execute(CollectionManager collectionManager, ArgsShell args) throws NotEnoughArgumentsException, WrongArgumentException {
+        int key = (int) args.getArguments()[0];
+        int deleted = collectionManager.removeLowerKey(key);
         collectionManager.addToHistory(this);
+        if (deleted == 0)return new Response("Ни один элемент не удалён");
+        return new Response("Удалено элементов: " + deleted);
+
     }
 
     @Override
     public void executeFromFile(BufferedReader reader, String[] args, CollectionManager collectionManager) throws NotEnoughLinesException, WrongArgumentException, NotEnoughArgumentsException {
-        execute(args, collectionManager);
     }
     @Override
     public boolean isNeedInput() {

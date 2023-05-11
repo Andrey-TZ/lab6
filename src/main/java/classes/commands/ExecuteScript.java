@@ -1,5 +1,7 @@
 package classes.commands;
 
+import classes.shells.ArgsShell;
+import classes.shells.Response;
 import exceptions.NotEnoughArgumentsException;
 import exceptions.NotEnoughLinesException;
 import exceptions.WrongArgumentException;
@@ -11,6 +13,7 @@ import java.util.HashMap;
 /**
  * Execute all commands from the file
  */
+
 public class ExecuteScript extends AbstractCommand {
     private HashMap<String, AbstractCommand> commands;
     private static int counter = 0;
@@ -21,7 +24,7 @@ public class ExecuteScript extends AbstractCommand {
         this.description = "исполнить скрипт из указанного файла";
     }
 
-    @Override
+
     public void execute(String[] args, CollectionManager collectionManager) throws NotEnoughArgumentsException, WrongArgumentException {
         if (args.length < 2) throw new NotEnoughArgumentsException("команда требует аргумент \"file_name\"");
 
@@ -57,6 +60,11 @@ public class ExecuteScript extends AbstractCommand {
         }
         collectionManager.addToHistory(this);
 
+    }
+
+    @Override
+    public Response execute(CollectionManager collectionManager, ArgsShell args) throws NotEnoughArgumentsException, WrongArgumentException {
+        return null;
     }
 
     @Override

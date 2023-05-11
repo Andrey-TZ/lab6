@@ -1,5 +1,7 @@
 package classes.commands;
 
+import classes.shells.ArgsShell;
+import classes.shells.Response;
 import exceptions.NotEnoughArgumentsException;
 import exceptions.NotEnoughLinesException;
 import exceptions.WrongArgumentException;
@@ -21,16 +23,17 @@ public class Help extends AbstractCommand {
     }
 
     @Override
-    public void execute(String[] args, CollectionManager collectionManager) {
+    public Response execute(CollectionManager collectionManager, ArgsShell args) {
+        Response response = new Response();
         for (String command : this.commands.keySet()) {
-            System.out.printf("%-41s - %s\n", commands.get(command).getName(), this.commands.get(command).getDescription());
+            response.setData("%-41s - %s\n" + commands.get(command).getName() + this.commands.get(command).getDescription());
         }
         collectionManager.addToHistory(this);
+        return response;
     }
 
     @Override
     public void executeFromFile(BufferedReader reader, String[] args, CollectionManager collectionManager) throws NotEnoughLinesException, WrongArgumentException, NotEnoughArgumentsException {
-        execute(args, collectionManager);
     }
 
 }

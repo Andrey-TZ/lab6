@@ -1,5 +1,7 @@
 package classes.commands;
 
+import classes.shells.ArgsShell;
+import classes.shells.Response;
 import exceptions.NotEnoughArgumentsException;
 import exceptions.NotEnoughLinesException;
 import exceptions.WrongArgumentException;
@@ -17,13 +19,12 @@ public class Info extends AbstractCommand {
     }
 
     @Override
-    public void execute(String[] args, CollectionManager collectionManager) throws NotEnoughArgumentsException, WrongArgumentException {
-        System.out.println(collectionManager.info());
+    public Response execute(CollectionManager collectionManager, ArgsShell args) throws NotEnoughArgumentsException, WrongArgumentException {
         collectionManager.addToHistory(this);
+        return new Response(collectionManager.info());
     }
 
     @Override
     public void executeFromFile(BufferedReader reader, String[] args, CollectionManager collectionManager) throws NotEnoughLinesException, WrongArgumentException, NotEnoughArgumentsException {
-        execute(args, collectionManager);
     }
 }

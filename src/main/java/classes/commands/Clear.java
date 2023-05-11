@@ -1,12 +1,13 @@
 package classes.commands;
 
+import classes.shells.ArgsShell;
+import classes.shells.Response;
 import exceptions.NotEnoughArgumentsException;
 import exceptions.NotEnoughLinesException;
 import exceptions.WrongArgumentException;
 import classes.utils.CollectionManager;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 
 
 /**
@@ -19,13 +20,15 @@ public class Clear extends AbstractCommand {
     }
 
     @Override
-    public void execute(String[] args, CollectionManager collectionManager) throws NotEnoughArgumentsException, WrongArgumentException {
+    public Response execute(CollectionManager collectionManager, ArgsShell args) throws NotEnoughArgumentsException, WrongArgumentException {
         collectionManager.clear();
         collectionManager.addToHistory(this);
+        Response response = new Response();
+        response.setData("Коллекция успешно ощищена");
+        return response;
     }
 
     @Override
     public void executeFromFile(BufferedReader reader, String[] args, CollectionManager collectionManager) throws NotEnoughLinesException, WrongArgumentException, NotEnoughArgumentsException {
-        execute(args, collectionManager);
     }
 }

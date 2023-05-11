@@ -1,6 +1,8 @@
 package classes.commands;
 
 import classes.model.StudyGroup;
+import classes.shells.ArgsShell;
+import classes.shells.Response;
 import classes.utils.CLIManager;
 import classes.utils.ScriptManager;
 import exceptions.NotEnoughArgumentsException;
@@ -16,6 +18,9 @@ import java.io.Reader;
 /**
  * Command to remove all elements from the collection witch less than a given one
  */
+
+
+
 public class RemoveLower extends AbstractCommand implements IsNeedInput{
     public RemoveLower() {
         this.name = "remove_lower {element}";
@@ -23,15 +28,12 @@ public class RemoveLower extends AbstractCommand implements IsNeedInput{
     }
 
     @Override
-    public void execute(String[] args, CollectionManager collectionManager) throws NotEnoughArgumentsException, WrongArgumentException {
-        if (collectionManager.isEmpty()) {
-            System.out.println("Элементов для удаления нет!");
-            return;
-            }
-        StudyGroup group = new StudyGroup();
-        CLIManager.requestStudyGroup(group);
-        collectionManager.removeLower(group);
+    public Response execute(CollectionManager collectionManager, ArgsShell args) throws NotEnoughArgumentsException, WrongArgumentException {
+        StudyGroup group = (StudyGroup) args.getArguments()[0];
+        int deleted = collectionManager.removeLower(group);
         collectionManager.addToHistory(this);
+        if(deleted == 0) return new Response("Элементов для удаления нет");
+        return new Response("Удалено элементов: " + deleted);
     }
 
     @Override

@@ -1,10 +1,10 @@
 package classes.utils;
 
 import classes.commands.AbstractCommand;
-import exceptions.WrongArgumentException;
-import classes.jsonParser.JsonParser;
 import classes.model.Person;
 import classes.model.StudyGroup;
+import classes.shells.Response;
+import exceptions.WrongArgumentException;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -18,18 +18,17 @@ import java.util.Set;
  */
 public class CollectionManager {
     private final String[] commandsHistory;
-    private ZonedDateTime creationDate;
+    private final ZonedDateTime creationDate;
     private int historyIndex = 0;
     private final Hashtable<Integer, StudyGroup> groups;
-    private final JsonParser parser;
+    private Response response = new Response();
 
     /**
      * Constructor. Creates the object to work with collection.
      */
-    public CollectionManager(String[] args) {
+    public CollectionManager() {
         Hashtable<Integer, StudyGroup> groups1;
-        parser = new JsonParser();
-        groups1 = parser.collectionFromJson(args);
+        groups1 = FIleManager.read();
         if (groups1 == null) {
             groups1 = new Hashtable<Integer, StudyGroup>();
         }
@@ -44,11 +43,10 @@ public class CollectionManager {
      * @return string with info
      */
     public String info() {
-        String result = "Информация о коллекции:\n";
-        result += "Инициализировано: " + this.creationDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
-        result += "\nТип коллекции: " + this.groups.getClass().getName();
-        result += "\nКоличество элементов: " + groups.size();
-        return result;
+        return "Информация о коллекции:\n"+
+         "Инициализировано: " + this.creationDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"))
+        + "\nТип коллекции: " + this.groups.getClass().getName()
+        + "\nКоличество элементов: " + groups.size();
     }
 
     /**
@@ -75,15 +73,35 @@ public class CollectionManager {
         return null;
     }
 
+    public boolean isExistById(int id){
+        for (StudyGroup group : groups.values()) {
+            if (group.getId() == id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public String update(int id, StudyGroup group){
+        StudyGroup group1 = getById(id);
+        if (group1 == null){
+            return "Элемент с id = " + id + "не найден";
+        }
+        group1 = group;
+        return "Элемент успешно обновлён";
+    }
+
     /**
      * Print all elements from collection
      */
-    public void show() {
-        if (groups.isEmpty()) System.out.println("В коллекции пока нет ни одного элемента");
+    public String show() {
+        if (groups.isEmpty()) return ("В коллекции пока нет ни одного элемента");
         else {
+            StringBuilder elements = new StringBuilder();
             for (StudyGroup group : groups.values()) {
-                System.out.println(group);
+                elements.append(group.toString()).append("\n");
             }
+            return elements.toString();
         }
     }
 
@@ -109,6 +127,7 @@ public class CollectionManager {
         return groups.containsKey(key);
     }
 
+
     /**
      * Remove element from collection by its key
      *
@@ -125,16 +144,15 @@ public class CollectionManager {
      */
     public void clear() {
         groups.clear();
-        System.out.println("Коллекция успешно очищена!");
     }
 
     /**
      * Save collection to file
      */
-    public void save() {
-        parser.writeJson(groups);
-        System.out.println("Коллекция успешно сохранена!");
-    }
+    public Response save() {
+        FIleManager.write(groups);
+        response.setData("Коллекция успешно сохранена!");
+        return response;}
 
 
     /**
@@ -142,15 +160,14 @@ public class CollectionManager {
      *
      * @param group element to compare
      */
-    public void removeLower(StudyGroup group) {
+    public int removeLower(StudyGroup group) {
         ArrayList<Integer> deleted_groups = new ArrayList<>();
         for (Integer key : groups.keySet()) {
             if (groups.get(key).compareTo(group) < 0) deleted_groups.add(key);
 
         }
         for (Integer key : deleted_groups) groups.remove(key);
-
-        System.out.println("Удалено элементов: " + deleted_groups.size());
+        return deleted_groups.size();
 
     }
 
@@ -158,16 +175,16 @@ public class CollectionManager {
      * Remove elements with less key
      *
      * @param key key to compare
+     * @return
      */
-    public void removeLowerKey(Integer key) {
+    public int removeLowerKey(Integer key) {
         ArrayList<Integer> deleted = new ArrayList<>();
         for (Integer key_i : groups.keySet()) {
             if (key_i < key) deleted.add(key_i);
         }
         for (Integer key_i : deleted) groups.remove(key_i);
 
-        if (!deleted.isEmpty()) System.out.println("Успешно удалено элементов: " + deleted.size());
-        else System.out.println("Не удалось найти ни одного элемента по таким параметрам");
+        return deleted.size();
     }
 
     /**

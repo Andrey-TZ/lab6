@@ -1,5 +1,7 @@
 package classes.commands;
 
+import classes.shells.ArgsShell;
+import classes.shells.Response;
 import exceptions.NotEnoughArgumentsException;
 import exceptions.NotEnoughLinesException;
 import exceptions.WrongArgumentException;
@@ -17,24 +19,23 @@ public class History extends AbstractCommand {
     }
 
     @Override
-    public void execute(String[] args, CollectionManager collectionManager) throws NotEnoughArgumentsException, WrongArgumentException {
+    public Response execute(CollectionManager collectionManager, ArgsShell args) throws NotEnoughArgumentsException, WrongArgumentException {
         String[] history = collectionManager.getHistory();
-        System.out.print("Последние команды: ");
+        Response response = new Response("Последние команды: ");
         for (int i = 0; i < 14; i++) {
             if (history[i] == null) break;
             if (history[i + 1] == null) {
-                System.out.print(history[i] + ".");
+                response.setData(history[i] + ".");
                 break;
             }
-            System.out.print(history[i] + ", ");
+            response.setData(history[i] + ", ");
         }
-        if (history[14] != null) System.out.print(history[14] + ".");
-        System.out.println();
+        if (history[14] != null) response.setData(history[14] + ".");
         collectionManager.addToHistory(this);
+        return response;
     }
 
     @Override
     public void executeFromFile(BufferedReader reader, String[] args, CollectionManager collectionManager) throws NotEnoughLinesException, WrongArgumentException, NotEnoughArgumentsException {
-        execute(args, collectionManager);
     }
 }

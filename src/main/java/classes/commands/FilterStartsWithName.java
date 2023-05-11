@@ -1,6 +1,8 @@
 package classes.commands;
 
 import classes.model.StudyGroup;
+import classes.shells.ArgsShell;
+import classes.shells.Response;
 import exceptions.NotEnoughArgumentsException;
 import exceptions.NotEnoughLinesException;
 import exceptions.WrongArgumentException;
@@ -19,23 +21,20 @@ public class FilterStartsWithName extends AbstractCommand implements IsNeedInput
         this.description = "вывести элементы, значения \"name\" которых начинается с заданной подстроки";
     }
     @Override
-    public void execute(String[] args, CollectionManager collectionManager) throws NotEnoughArgumentsException, WrongArgumentException {
-        if(args.length < 2) throw new NotEnoughArgumentsException("команда требует аргумент \"name\"");
-        String name = args[1];
+    public Response execute(CollectionManager collectionManager, ArgsShell args) throws NotEnoughArgumentsException, WrongArgumentException {
+        String name = (String) args.getArguments()[0];
         Set<StudyGroup> groups = collectionManager.filterStartsWithName(name);
-        Set set = new HashSet();
-        HashSet h = new HashSet();
-
+        Response response = new Response("Группы, начинающиеся с \"" + name + "\":");
         for(StudyGroup group : groups){
-            System.out.println(group);
+            response.setData(group.toString());
         }
         collectionManager.addToHistory(this);
+        return response;
     }
 
 
     @Override
     public void executeFromFile(BufferedReader reader, String[] args, CollectionManager collectionManager) throws NotEnoughLinesException, WrongArgumentException, NotEnoughArgumentsException {
-        execute(args, collectionManager);
     }
 
     @Override

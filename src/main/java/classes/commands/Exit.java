@@ -1,5 +1,7 @@
 package classes.commands;
 
+import classes.shells.ArgsShell;
+import classes.shells.Response;
 import exceptions.NotEnoughArgumentsException;
 import exceptions.NotEnoughLinesException;
 import exceptions.WrongArgumentException;
@@ -18,14 +20,15 @@ public class Exit extends AbstractCommand{
     }
 
     @Override
-    public void execute(String[] args, CollectionManager collectionManager) {
+    public Response execute(CollectionManager collectionManager, ArgsShell args) {
         System.out.println("Программа будет закрыта");
-        System.exit(0);
+        collectionManager.addToHistory(this);
+        Runtime.getRuntime().exit(0);
+        return new Response("Программа будет закрыта");
     }
 
     @Override
     public void executeFromFile(BufferedReader reader, String[] args, CollectionManager collectionManager) throws NotEnoughLinesException, WrongArgumentException, NotEnoughArgumentsException {
-        execute(args, collectionManager);
     }
 
 }

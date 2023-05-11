@@ -1,6 +1,8 @@
 package classes.commands;
 
 import classes.model.StudyGroup;
+import classes.shells.ArgsShell;
+import classes.shells.Response;
 import classes.utils.CLIManager;
 import classes.utils.ScriptManager;
 import exceptions.NotEnoughArgumentsException;
@@ -21,19 +23,13 @@ public class Insert extends AbstractCommand implements IsNeedInput {
     }
 
     @Override
-    public void execute(String[] args, CollectionManager collectionManager) throws NotEnoughArgumentsException, WrongArgumentException {
-        if (args.length < 2) throw new NotEnoughArgumentsException("команда требует аргумент \"key\"");
-        int key;
-        try {
-            key = Integer.parseInt(args[1]);
-        } catch (NumberFormatException e) {
-            throw new WrongArgumentException("аргумент должен быть числом! ");
-        }
-        StudyGroup group = new StudyGroup();
-        CLIManager.requestStudyGroup(group);
+    public Response execute(CollectionManager collectionManager, ArgsShell args) throws NotEnoughArgumentsException, WrongArgumentException {
+        int key = (int) args.getArguments()[0];
+        StudyGroup group =  (StudyGroup) args.getArguments()[1];
         collectionManager.insert(key, group);
-        System.out.println("Элемент успешно добавлен");
         collectionManager.addToHistory(this);
+        return new Response("Элемент успешно добавлен");
+
     }
 
     @Override

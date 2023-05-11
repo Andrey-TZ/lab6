@@ -1,5 +1,7 @@
 package classes.commands;
 
+import classes.shells.ArgsShell;
+import classes.shells.Response;
 import exceptions.NotEnoughArgumentsException;
 import exceptions.NotEnoughLinesException;
 import exceptions.WrongArgumentException;
@@ -21,12 +23,11 @@ public abstract class AbstractCommand implements Serializable {
 
     /**
      *  Method to execute command
-     * @param args command line arguments
      * @param collectionManager object working with collection
      * @throws NotEnoughArgumentsException  when argument's count does not match requirements.
      * @throws WrongArgumentException when argument doesn't match requirements.
      */
-    public abstract void execute(String[] args, CollectionManager collectionManager) throws NotEnoughArgumentsException, WrongArgumentException;
+    public abstract Response execute(CollectionManager collectionManager, ArgsShell args) throws NotEnoughArgumentsException, WrongArgumentException;
 
     /**
      * Method to execute command from file

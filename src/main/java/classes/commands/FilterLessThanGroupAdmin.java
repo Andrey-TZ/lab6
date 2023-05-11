@@ -2,6 +2,8 @@ package classes.commands;
 
 import classes.model.Person;
 import classes.model.StudyGroup;
+import classes.shells.ArgsShell;
+import classes.shells.Response;
 import classes.utils.CLIManager;
 import classes.utils.ScriptManager;
 import exceptions.NotEnoughArgumentsException;
@@ -23,9 +25,21 @@ public class FilterLessThanGroupAdmin extends AbstractCommand implements IsNeedI
     }
 
     @Override
-    public void execute(String[] args, CollectionManager collectionManager) throws NotEnoughArgumentsException, WrongArgumentException {
-        Person groupAdmin = CLIManager.requestAdminGroup();
-        execute(collectionManager, groupAdmin);
+    public Response execute(CollectionManager collectionManager, ArgsShell args) throws NotEnoughArgumentsException, WrongArgumentException {
+        Person groupAdmin = (Person) args.getArguments()[0];
+        if (collectionManager.isEmpty()) {
+            return new Response("Нет элементов для сравнения");
+        }
+        Set<StudyGroup> groups = collectionManager.filterLessThanGroupAdmin(groupAdmin);
+        if (groups == null) {
+            return new Response("Элементы с заданным фильтром не найдены");
+        }
+        Response response = new Response("Найдены группы:");
+        for (StudyGroup group : groups) {
+            response.setData(group.toString());
+        }
+        collectionManager.addToHistory(this);
+        return response;
     }
 
     @Override

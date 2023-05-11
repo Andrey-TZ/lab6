@@ -3,6 +3,7 @@ package classes.utils;
 import classes.commands.AbstractCommand;
 import classes.shells.ArgsShell;
 import classes.model.*;
+import classes.shells.Response;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -27,10 +28,10 @@ public class ClientSession implements Runnable {
                 Object inputObject = inputStream.readObject();
                 if (inputObject instanceof AbstractCommand command) {
                     System.out.println(command);
-//                Response outputData;
+                    Response outputData;
                     ArgsShell inputData = (ArgsShell) inputStream.readObject();
-                    System.out.println(inputData.getArguments()[0]);
-//                    command.execute(inputData);
+                    CollectionManager collectionManager = new CollectionManager();
+//                    command.execute(collectionManager, inputData, outputData);
 
                 }
 
@@ -38,9 +39,7 @@ public class ClientSession implements Runnable {
 
             }
         } catch (IOException e) {
-
             System.out.println("Соединение разорвано, ожидаю нового подключения");
-
             System.out.println("Хранилище сохранено в файл");
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
