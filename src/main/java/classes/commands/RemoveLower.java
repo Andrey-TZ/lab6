@@ -28,7 +28,7 @@ public class RemoveLower extends AbstractCommand implements IsNeedInput{
     }
 
     @Override
-    public Response execute(CollectionManager collectionManager, ArgsShell args) throws NotEnoughArgumentsException, WrongArgumentException {
+    public Response execute(CollectionManager collectionManager, ArgsShell args) {
         StudyGroup group = (StudyGroup) args.getArguments()[0];
         int deleted = collectionManager.removeLower(group);
         collectionManager.addToHistory(this);

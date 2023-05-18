@@ -25,6 +25,7 @@ public class Exit extends AbstractCommand{
         collectionManager.addToHistory(this);
         Runtime.getRuntime().exit(0);
         return new Response("Программа будет закрыта");
+
     }
 
     @Override

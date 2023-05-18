@@ -34,7 +34,7 @@ public class FIleManager {
     public static Hashtable<Integer, StudyGroup> read() {
         while (true) {
             if(check()){
-                JsonParser.readJson(PATH);
+                return JsonParser.readJson(PATH);
             }
             else{
                 try {

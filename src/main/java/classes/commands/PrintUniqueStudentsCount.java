@@ -22,7 +22,7 @@ public class PrintUniqueStudentsCount extends AbstractCommand {
 
 
     @Override
-    public Response execute(CollectionManager collectionManager, ArgsShell args) throws NotEnoughArgumentsException, WrongArgumentException {
+    public Response execute(CollectionManager collectionManager, ArgsShell args) {
         Response response = new Response("Все уникальные значения \"students count\": ");
         int index = 0;
         Set<Long> uniqueCounts = collectionManager.getUniqueStudentsCount();

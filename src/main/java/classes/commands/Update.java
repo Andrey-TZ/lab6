@@ -23,7 +23,7 @@ public class Update extends AbstractCommand implements IsNeedInput {
     }
 
     @Override
-    public Response execute(CollectionManager collectionManager, ArgsShell args) throws NotEnoughArgumentsException, WrongArgumentException {
+    public Response execute(CollectionManager collectionManager, ArgsShell args) {
         int id = (int) args.getArguments()[0];
         StudyGroup group = (StudyGroup) args.getArguments()[1];
         collectionManager.addToHistory(this);

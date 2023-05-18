@@ -21,7 +21,7 @@ public class FilterStartsWithName extends AbstractCommand implements IsNeedInput
         this.description = "вывести элементы, значения \"name\" которых начинается с заданной подстроки";
     }
     @Override
-    public Response execute(CollectionManager collectionManager, ArgsShell args) throws NotEnoughArgumentsException, WrongArgumentException {
+    public Response execute(CollectionManager collectionManager, ArgsShell args)  {
         String name = (String) args.getArguments()[0];
         Set<StudyGroup> groups = collectionManager.filterStartsWithName(name);
         Response response = new Response("Группы, начинающиеся с \"" + name + "\":");

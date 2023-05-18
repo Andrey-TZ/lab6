@@ -23,12 +23,19 @@ public class Insert extends AbstractCommand implements IsNeedInput {
     }
 
     @Override
-    public Response execute(CollectionManager collectionManager, ArgsShell args) throws NotEnoughArgumentsException, WrongArgumentException {
+    public Response execute(CollectionManager collectionManager, ArgsShell args)  {
         int key = (int) args.getArguments()[0];
         StudyGroup group =  (StudyGroup) args.getArguments()[1];
-        collectionManager.insert(key, group);
+        Response response = new Response();
+        try {
+            collectionManager.insert(key, group);
+            response.setData("Элемент успешно добавлен");
+        }
+        catch (WrongArgumentException e){
+            response.setData(e.getMessage());
+        }
         collectionManager.addToHistory(this);
-        return new Response("Элемент успешно добавлен");
+        return response;
 
     }
 

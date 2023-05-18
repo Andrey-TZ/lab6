@@ -27,7 +27,7 @@ public abstract class AbstractCommand implements Serializable {
      * @throws NotEnoughArgumentsException  when argument's count does not match requirements.
      * @throws WrongArgumentException when argument doesn't match requirements.
      */
-    public abstract Response execute(CollectionManager collectionManager, ArgsShell args) throws NotEnoughArgumentsException, WrongArgumentException;
+    public abstract Response execute(CollectionManager collectionManager, ArgsShell args);
 
     /**
      * Method to execute command from file

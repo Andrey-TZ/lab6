@@ -15,7 +15,7 @@ public class Client {
             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
             ObjectInputStream in = new ObjectInputStream(socket.getInputStream())) {
             CommandManager commandManager = new CommandManager();
-            commandManager.start(out);
+            commandManager.start(out, in);
         } catch (IOException e) {
             System.out.println("Соединение разорвано");
         }

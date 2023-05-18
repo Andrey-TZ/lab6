@@ -38,6 +38,7 @@ public class Server {
             } catch (IOException e) {
                 throw new RuntimeException(e);
 //                System.out.println("Соединение разорвано, ожидаю нового подключения");
+
             }
         }
     }

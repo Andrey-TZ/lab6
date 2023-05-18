@@ -21,7 +21,7 @@ public class Save extends AbstractCommand{
     }
 
     @Override
-    public Response execute(CollectionManager collectionManager, ArgsShell args) throws NotEnoughArgumentsException, WrongArgumentException {
+    public Response execute(CollectionManager collectionManager, ArgsShell args)  {
         collectionManager.save();
         collectionManager.addToHistory(this);
         return new Response("Коллекция успешно сохранена");

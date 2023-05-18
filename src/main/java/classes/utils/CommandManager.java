@@ -2,10 +2,12 @@ package classes.utils;
 
 import classes.commands.*;
 import classes.shells.ArgsShell;
+import classes.shells.Response;
 import exceptions.NotEnoughArgumentsException;
 import exceptions.WrongArgumentException;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -42,7 +44,7 @@ public class CommandManager {
 
     }
 
-    public void start(ObjectOutputStream out) {
+    public void start(ObjectOutputStream out, ObjectInputStream in) {
         Scanner commandReader = new Scanner(System.in);
         while (true) {
             System.out.print("Введите команду: ");
@@ -51,6 +53,10 @@ public class CommandManager {
             try {
                 String command = arguments[0].trim();
                 ArgsShell args = new ArgsShell();
+                if (command.equals("exit")){
+                    commands.get(command).execute(new CollectionManager(), args);
+                }
+
                 if (commands.get(command).isNeedInput()) {
                     args.setArguments( commandsWithArgs.get(command).validate(arguments));
                     System.out.println(args.getArguments()[0]);
@@ -58,6 +64,12 @@ public class CommandManager {
                 out.writeObject(commands.get(command));
                 out.writeObject(args);
                 out.flush();
+
+
+                Response response = (Response) in.readObject();
+                response.showData();
+
+
 
             } catch (NullPointerException e) {
                 System.out.println("Не удалось обнаружить команду: " + arguments[0].trim());
@@ -67,6 +79,8 @@ public class CommandManager {
                 System.out.println("Недостаточно аргументов. " + e.getMessage() + "Попробуйте еще раз!");
             } catch (IOException e) {
                 System.out.println("Не получилось отправить команду на сервер");
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
             }
 
         }

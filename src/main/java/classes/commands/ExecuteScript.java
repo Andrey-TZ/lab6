@@ -63,7 +63,7 @@ public class ExecuteScript extends AbstractCommand {
     }
 
     @Override
-    public Response execute(CollectionManager collectionManager, ArgsShell args) throws NotEnoughArgumentsException, WrongArgumentException {
+    public Response execute(CollectionManager collectionManager, ArgsShell args)  {
         return null;
     }
 

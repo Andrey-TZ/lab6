@@ -19,7 +19,7 @@ public class Info extends AbstractCommand {
     }
 
     @Override
-    public Response execute(CollectionManager collectionManager, ArgsShell args) throws NotEnoughArgumentsException, WrongArgumentException {
+    public Response execute(CollectionManager collectionManager, ArgsShell args) {
         collectionManager.addToHistory(this);
         return new Response(collectionManager.info());
     }

@@ -25,7 +25,7 @@ public class FilterLessThanGroupAdmin extends AbstractCommand implements IsNeedI
     }
 
     @Override
-    public Response execute(CollectionManager collectionManager, ArgsShell args) throws NotEnoughArgumentsException, WrongArgumentException {
+    public Response execute(CollectionManager collectionManager, ArgsShell args)  {
         Person groupAdmin = (Person) args.getArguments()[0];
         if (collectionManager.isEmpty()) {
             return new Response("Нет элементов для сравнения");

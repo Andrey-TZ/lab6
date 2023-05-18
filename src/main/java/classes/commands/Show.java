@@ -12,20 +12,14 @@ import java.io.BufferedReader;
 /**
  * Command to display all elements from the collection
  */
-public class Show extends AbstractCommand{
-    public Show(){
+public class Show extends AbstractCommand {
+    public Show() {
         this.name = "show";
         this.description = "вывести все элементы коллекции";
     }
-    /**
-     * @param args
-     * @param collectionManager
-     * @throws NotEnoughArgumentsException
-     * @throws WrongArgumentException
-     */
 
     @Override
-    public Response execute(CollectionManager collectionManager, ArgsShell args) throws NotEnoughArgumentsException, WrongArgumentException {
+    public Response execute(CollectionManager collectionManager, ArgsShell args) {
         collectionManager.addToHistory(this);
         return new Response(collectionManager.show());
     }

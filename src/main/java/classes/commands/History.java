@@ -19,7 +19,7 @@ public class History extends AbstractCommand {
     }
 
     @Override
-    public Response execute(CollectionManager collectionManager, ArgsShell args) throws NotEnoughArgumentsException, WrongArgumentException {
+    public Response execute(CollectionManager collectionManager, ArgsShell args) {
         String[] history = collectionManager.getHistory();
         Response response = new Response("Последние команды: ");
         for (int i = 0; i < 14; i++) {

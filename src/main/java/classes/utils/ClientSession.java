@@ -1,9 +1,12 @@
 package classes.utils;
 
 import classes.commands.AbstractCommand;
+import classes.commands.Save;
 import classes.shells.ArgsShell;
 import classes.model.*;
 import classes.shells.Response;
+import exceptions.NotEnoughArgumentsException;
+import exceptions.WrongArgumentException;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -16,9 +19,9 @@ public class ClientSession implements Runnable {
     public ClientSession(Socket socket) {
         this.socket = socket;
     }
-
     @Override
     public void run() {
+        CollectionManager collectionManager = new CollectionManager();
         try {
             ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
             ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
@@ -26,23 +29,24 @@ public class ClientSession implements Runnable {
 
             while (!socket.isClosed()) {
                 Object inputObject = inputStream.readObject();
-                if (inputObject instanceof AbstractCommand command) {
-                    System.out.println(command);
-                    Response outputData;
-                    ArgsShell inputData = (ArgsShell) inputStream.readObject();
-                    CollectionManager collectionManager = new CollectionManager();
-//                    command.execute(collectionManager, inputData, outputData);
+                AbstractCommand command = (AbstractCommand) inputObject;
+                System.out.println(command);
+                ArgsShell inputData = (ArgsShell) inputStream.readObject();
+                Response outputData = command.execute(collectionManager, inputData);
+                System.out.println(outputData);
 
-                }
-
+                outputStream.writeObject(outputData);
                 outputStream.flush();
+
 
             }
         } catch (IOException e) {
-            System.out.println("Соединение разорвано, ожидаю нового подключения");
-            System.out.println("Хранилище сохранено в файл");
+            collectionManager.save();
+            System.out.println("Соединение разорвано, хранилище сохранено в файл");
+            System.out.println("Ожидаю нового подключения");
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
 }
+

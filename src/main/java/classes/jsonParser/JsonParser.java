@@ -105,7 +105,7 @@ public class JsonParser {
         Gson gson = builder.create();
         String collectionJsonString = gson.toJson(collection, collectionType);
 
-        PrintWriter out = new PrintWriter(new FileWriter(path.toFile()));
+        PrintWriter out = new PrintWriter(new FileWriter(file.toFile()));
         out.write(collectionJsonString);
         out.close();
     }

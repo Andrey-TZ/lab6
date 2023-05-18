@@ -20,7 +20,7 @@ public class Clear extends AbstractCommand {
     }
 
     @Override
-    public Response execute(CollectionManager collectionManager, ArgsShell args) throws NotEnoughArgumentsException, WrongArgumentException {
+    public Response execute(CollectionManager collectionManager, ArgsShell args) {
         collectionManager.clear();
         collectionManager.addToHistory(this);
         Response response = new Response();

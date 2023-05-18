@@ -21,7 +21,7 @@ public class RemoveKey extends AbstractCommand implements IsNeedInput {
 
 
     @Override
-    public Response execute(CollectionManager collectionManager, ArgsShell args) throws NotEnoughArgumentsException, WrongArgumentException {
+    public Response execute(CollectionManager collectionManager, ArgsShell args) {
         int key = (int) args.getArguments()[0];
         collectionManager.addToHistory(this);
         if (collectionManager.isKeyExist(key)){
