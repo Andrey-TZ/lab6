@@ -26,6 +26,7 @@ public class Insert extends AbstractCommand implements IsNeedInput {
     public Response execute(CollectionManager collectionManager, ArgsShell args) {
         int key = (int) args.getArguments()[0];
         StudyGroup group = (StudyGroup) args.getArguments()[1];
+        group.checkId();
         Response response = new Response();
         try {
             collectionManager.insert(key, group);
@@ -36,23 +37,6 @@ public class Insert extends AbstractCommand implements IsNeedInput {
         collectionManager.addToHistory(this);
         return response;
 
-    }
-
-    @Override
-    public void executeFromFile(BufferedReader reader, String[] args, CollectionManager collectionManager) throws NotEnoughLinesException, WrongArgumentException, NotEnoughArgumentsException, IOException {
-        if (args.length < 2) throw new NotEnoughArgumentsException("команда требует аргумент \"key\"");
-        int key;
-        try {
-            key = Integer.parseInt(args[1]);
-        } catch (NumberFormatException e) {
-            throw new WrongArgumentException("аргумент должен быть числом! ");
-        }
-        ScriptManager manager = new ScriptManager(reader);
-        StudyGroup group = new StudyGroup();
-        manager.requestStudyGroup(group);
-        collectionManager.insert(key, group);
-        System.out.println("Элемент успешно добавлен");
-        collectionManager.addToHistory(this);
     }
 
     @Override

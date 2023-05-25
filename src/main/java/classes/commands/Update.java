@@ -31,24 +31,6 @@ public class Update extends AbstractCommand implements IsNeedInput {
     }
 
     @Override
-    public void executeFromFile(BufferedReader reader, String[] args, CollectionManager collectionManager) throws NotEnoughLinesException, WrongArgumentException, NotEnoughArgumentsException, IOException {
-        if (args.length < 2) throw new NotEnoughArgumentsException("команда требует аргумент \"id\"");
-        int id;
-        try {
-            id = Integer.parseInt(args[1]);
-        } catch (NumberFormatException e) {
-            throw new WrongArgumentException("аргумент должен быть числом! ");
-        }
-        StudyGroup group = collectionManager.getById(id);
-        if (group == null) throw new WrongArgumentException("Элемент с таким id не найден. ");
-        ScriptManager manager = new ScriptManager(reader);
-        manager.requestStudyGroup(group);
-
-        System.out.println("Элемент успешно обновлён");
-        collectionManager.addToHistory(this);
-    }
-
-    @Override
     public boolean isNeedInput() {
         return true;
     }
@@ -77,7 +59,6 @@ public class Update extends AbstractCommand implements IsNeedInput {
             throw new WrongArgumentException("аргумент должен быть числом! ");
         }
         StudyGroup group = new StudyGroup();
-        if (group == null) throw new WrongArgumentException("Элемент с таким id не найден. ");
         ScriptManager manager = new ScriptManager(reader);
         manager.requestStudyGroup(group);
         return new Object[]{id, group};

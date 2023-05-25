@@ -25,15 +25,12 @@ public class Help extends AbstractCommand {
     @Override
     public Response execute(CollectionManager collectionManager, ArgsShell args) {
         Response response = new Response();
+        response.setFormat("%-41s - %s\n");
         for (String command : this.commands.keySet()) {
-            response.setData("%-41s - %s\n" + commands.get(command).getName() + this.commands.get(command).getDescription());
+            response.setFormattedData(new String[]{commands.get(command).getName(), this.commands.get(command).getDescription()});
         }
         collectionManager.addToHistory(this);
         return response;
-    }
-
-    @Override
-    public void executeFromFile(BufferedReader reader, String[] args, CollectionManager collectionManager) throws NotEnoughLinesException, WrongArgumentException, NotEnoughArgumentsException {
     }
 
 }

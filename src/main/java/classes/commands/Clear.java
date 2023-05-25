@@ -27,8 +27,4 @@ public class Clear extends AbstractCommand {
         response.setData("Коллекция успешно ощищена");
         return response;
     }
-
-    @Override
-    public void executeFromFile(BufferedReader reader, String[] args, CollectionManager collectionManager) throws NotEnoughLinesException, WrongArgumentException, NotEnoughArgumentsException {
-    }
 }

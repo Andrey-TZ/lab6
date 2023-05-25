@@ -16,20 +16,17 @@ import java.io.FileReader;
 public class Exit extends AbstractCommand{
     public Exit(){
         this.name = "exit";
-        this.description = "завершить программу (без сохранения в файл)";
+        this.description = "завершить программу (с сохранением в файл)";
     }
 
     @Override
     public Response execute(CollectionManager collectionManager, ArgsShell args) {
         System.out.println("Программа будет закрыта");
         collectionManager.addToHistory(this);
-        Runtime.getRuntime().exit(0);
-        return new Response("Программа будет закрыта");
-
+        Response response = new Response(collectionManager.save());
+        System.out.println("Коллекция сохранена");
+        response.setData("Программа будет закрыта");
+        response.setLastResponse();
+        return response;
     }
-
-    @Override
-    public void executeFromFile(BufferedReader reader, String[] args, CollectionManager collectionManager) throws NotEnoughLinesException, WrongArgumentException, NotEnoughArgumentsException {
-    }
-
 }

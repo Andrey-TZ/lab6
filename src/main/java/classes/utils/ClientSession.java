@@ -16,13 +16,14 @@ import java.net.Socket;
 
 public class ClientSession implements Runnable {
     Socket socket;
+    CollectionManager collectionManager;
 
-    public ClientSession(Socket socket) {
+    public ClientSession(Socket socket, CollectionManager collectionManager) {
         this.socket = socket;
+        this.collectionManager = collectionManager;
     }
     @Override
     public void run() {
-        CollectionManager collectionManager = new CollectionManager();
         try {
             ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
             ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
@@ -37,9 +38,10 @@ public class ClientSession implements Runnable {
                 outputStream.writeObject(outputData);
                 outputStream.flush();
             }
+            new Save().execute(collectionManager, new ArgsShell());
         } catch (IOException e) {
             collectionManager.save();
-            System.out.println("Соединение разорвано, хранилище сохранено в файл");
+            System.out.println("Соединение разорвано, коллекция сохранена в файл");
             System.out.println("Ожидаю нового подключения");
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);

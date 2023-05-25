@@ -47,7 +47,7 @@ public class StudyGroup implements Comparable<StudyGroup>, Serializable {
     }
 
     public StudyGroup(){
-        this.id = idSetter++;
+        this.id = hashCode();
         this.creationDate = LocalDateTime.now();
     }
 
@@ -165,5 +165,23 @@ public class StudyGroup implements Comparable<StudyGroup>, Serializable {
         return Long.compare(studentsCount, obj.getStudentsCount());
     }
 
-    ;
+
+    public void update(StudyGroup obj){
+        this.name = obj.getName();
+        this.studentsCount = obj.getStudentsCount();
+        this.groupAdmin = obj.getGroupAdmin();
+        this.coordinates=obj.getCoordinates();
+        this.formOfEducation = obj.getFormOfEducation();
+        this.semesterEnum = obj.getSemesterEnum();
+    }
+
+    public void checkId(){
+        if (id >= idSetter){
+            idSetter = id;
+            idSetter++;
+        }
+        else{
+            this.setId(idSetter++);
+        }
+    }
 }

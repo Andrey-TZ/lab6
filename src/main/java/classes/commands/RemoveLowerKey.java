@@ -33,9 +33,6 @@ public class RemoveLowerKey extends AbstractCommand implements IsNeedInput{
     }
 
     @Override
-    public void executeFromFile(BufferedReader reader, String[] args, CollectionManager collectionManager) throws NotEnoughLinesException, WrongArgumentException, NotEnoughArgumentsException {
-    }
-    @Override
     public boolean isNeedInput() {
         return true;
     }

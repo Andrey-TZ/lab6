@@ -20,20 +20,15 @@ public class RemoveKey extends AbstractCommand implements IsNeedInput {
     }
 
 
-
     @Override
     public Response execute(CollectionManager collectionManager, ArgsShell args) {
         int key = (int) args.getArguments()[0];
         collectionManager.addToHistory(this);
-        if (collectionManager.isKeyExist(key)){
+        if (collectionManager.isKeyExist(key)) {
             collectionManager.removeByKey(key);
             return new Response("Элемент с ключом \"" + key + "\" успешно удалён");
         }
         return new Response("Элемент с ключом \"" + key + "\" не существует");
-    }
-
-    @Override
-    public void executeFromFile(BufferedReader reader, String[] args, CollectionManager collectionManager) throws NotEnoughLinesException, WrongArgumentException, NotEnoughArgumentsException {
     }
 
     @Override

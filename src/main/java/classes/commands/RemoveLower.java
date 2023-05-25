@@ -37,20 +37,6 @@ public class RemoveLower extends AbstractCommand implements IsNeedInput{
     }
 
     @Override
-    public void executeFromFile(BufferedReader reader, String[] args, CollectionManager collectionManager) throws NotEnoughLinesException, WrongArgumentException, NotEnoughArgumentsException, IOException {
-        if (collectionManager.isEmpty()) {
-            System.out.println("Элементов для удаления нет!");
-            return;
-        }
-        ScriptManager manager = new ScriptManager(reader);
-        StudyGroup group = new StudyGroup();
-        manager.requestStudyGroup(group);
-        collectionManager.removeLower(group);
-        collectionManager.addToHistory(this);
-    }
-
-
-    @Override
     public Object[] validate(String[] args) throws NotEnoughArgumentsException, WrongArgumentException {
         StudyGroup group = new StudyGroup();
         CLIManager.requestStudyGroup(group);

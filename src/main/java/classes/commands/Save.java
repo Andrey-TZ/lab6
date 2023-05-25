@@ -26,8 +26,4 @@ public class Save extends AbstractCommand{
         collectionManager.addToHistory(this);
         return new Response("Коллекция успешно сохранена");
     }
-
-    @Override
-    public void executeFromFile(BufferedReader reader, String[] args, CollectionManager collectionManager) throws NotEnoughLinesException, WrongArgumentException, NotEnoughArgumentsException {
-    }
 }

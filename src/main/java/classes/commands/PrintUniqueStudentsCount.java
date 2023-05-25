@@ -38,9 +38,4 @@ public class PrintUniqueStudentsCount extends AbstractCommand {
         collectionManager.addToHistory(this);
         return response;
     }
-
-    @Override
-    public void executeFromFile(BufferedReader reader, String[] args, CollectionManager collectionManager) throws NotEnoughLinesException, WrongArgumentException, NotEnoughArgumentsException {
-
-    }
 }

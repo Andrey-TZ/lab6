@@ -3,15 +3,12 @@ package classes.utils;
 import classes.commands.*;
 import classes.shells.ArgsShell;
 import classes.shells.Request;
-import classes.shells.Response;
 import exceptions.NotEnoughArgumentsException;
 import exceptions.NotEnoughLinesException;
 import exceptions.WrongArgumentException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -19,7 +16,7 @@ public class CommandManager {
     private static final HashMap<String, AbstractCommand> commands = new HashMap<>();
     private static final HashMap<String, IsNeedInput> commandsWithArgs = new HashMap<>();
 
-    public CommandManager() {
+    static {
         commands.put("clear", new Clear());
         commands.put("execute_script", new ExecuteScript());
         commands.put("exit", new Exit());
@@ -37,6 +34,7 @@ public class CommandManager {
         commands.put("show", new Show());
         commands.put("update", new Update());
 
+        commandsWithArgs.put("execute_script",new ExecuteScript());
         commandsWithArgs.put("filter_less_than_group_admin", new FilterLessThanGroupAdmin());
         commandsWithArgs.put("filter_starts_with_name", new FilterStartsWithName());
         commandsWithArgs.put("insert", new Insert());
@@ -47,7 +45,7 @@ public class CommandManager {
 
     }
 
-    public Request start() {
+    public static Request start() {
         Scanner commandReader = new Scanner(System.in);
         while (true) {
             System.out.print("Введите команду: ");
@@ -56,9 +54,6 @@ public class CommandManager {
             try {
                 String command = arguments[0].trim();
                 ArgsShell args = new ArgsShell();
-                if (command.equals("exit")) {
-                    commands.get(command).execute(new CollectionManager(), args);
-                }
 
                 if (commands.get(command).isNeedInput()) {
                     args.setArguments(commandsWithArgs.get(command).validate(arguments));
@@ -67,9 +62,9 @@ public class CommandManager {
             } catch (NullPointerException e) {
                 System.out.println("Не удалось обнаружить команду: " + arguments[0].trim());
             } catch (WrongArgumentException e) {
-                System.out.println("Введён неподходящий аргумент! " + e.getMessage() + "Попробуйте еще раз!");
+                System.out.println("Введён неподходящий аргумент! " + e.getMessage() + " Попробуйте еще раз!");
             } catch (NotEnoughArgumentsException e) {
-                System.out.println("Недостаточно аргументов. " + e.getMessage() + "Попробуйте еще раз!");
+                System.out.println("Недостаточно аргументов в файле. " + e.getMessage() + " Попробуйте еще раз!");
             }
 
         }
@@ -79,13 +74,14 @@ public class CommandManager {
         String line = reader.readLine();
         while (line != null) {
             String[] argsFromFile = line.split("\\s+");
-            AbstractCommand command = commands.get(argsFromFile[0]);
+            AbstractCommand command = commands.get(argsFromFile[0].trim().toLowerCase());
             try {
                 ArgsShell argsToRequest = new ArgsShell();
                 if (command.isNeedInput()) {
-                    argsToRequest.setArguments(commandsWithArgs.get(command).validateFromFile(reader, argsFromFile));
+                    argsToRequest.setArguments(commandsWithArgs.get(argsFromFile[0]).validateFromFile(reader, argsFromFile));
+
                 }
-                return new Request(commands.get(command), argsToRequest);
+                return new Request(commands.get(argsFromFile[0]), argsToRequest);
             } catch (NullPointerException e) {
                 System.out.println("Не удалось найти команду " + argsFromFile[0]);
             } catch (NotEnoughLinesException e) {

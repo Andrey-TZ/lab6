@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Hashtable;
+import java.util.Scanner;
 
 public class FIleManager {
     private static final Path PATH = Paths.get("collection.json");
@@ -21,11 +22,14 @@ public class FIleManager {
             try {
                 if (check()) {
                     JsonParser.writeJson(collection, PATH);
+                    break;
                 } else {
                     Files.createFile(PATH);
                 }
             } catch (IOException e) {
                 System.out.println("Введите новый путь к файлу с коллекцией: " );
+                Scanner scanner = new Scanner(System.in);
+                Path newPath = Paths.get(scanner.nextLine());
             }
         }
 

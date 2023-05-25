@@ -23,8 +23,4 @@ public class Info extends AbstractCommand {
         collectionManager.addToHistory(this);
         return new Response(collectionManager.info());
     }
-
-    @Override
-    public void executeFromFile(BufferedReader reader, String[] args, CollectionManager collectionManager) throws NotEnoughLinesException, WrongArgumentException, NotEnoughArgumentsException {
-    }
 }

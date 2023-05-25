@@ -3,7 +3,6 @@ package classes.utils;
 import classes.commands.AbstractCommand;
 import classes.model.Person;
 import classes.model.StudyGroup;
-import classes.shells.Response;
 import exceptions.WrongArgumentException;
 
 import java.time.ZonedDateTime;
@@ -18,7 +17,6 @@ public class CollectionManager {
     private final ZonedDateTime creationDate;
     private int historyIndex = 0;
     private final Hashtable<Integer, StudyGroup> groups;
-    private Response response = new Response();
 
     /**
      * Constructor. Creates the object to work with collection.
@@ -82,11 +80,9 @@ public class CollectionManager {
     public String update(int id, StudyGroup group) {
         StudyGroup group1 = getById(id);
         if (group1 == null) {
-            return "Элемент с id = " + id + "не найден";
+            return "Элемент с id = " + id + " не найден";
         }
-        group.setId(group1.getId());
-        group1 = group;
-
+        group1.update(group);
         return "Элемент успешно обновлён";
     }
 
@@ -142,10 +138,9 @@ public class CollectionManager {
     /**
      * Save collection to file
      */
-    public Response save() {
-        FIleManager.writeJson(groups);
-        response.setData("Коллекция успешно сохранена!");
-        return response;
+    public String save() {
+       FIleManager.writeJson(groups);
+        return "Коллекция успешно сохранена!";
     }
 
 

@@ -46,9 +46,7 @@ public class ScriptManager {
     }
 
     public String requestString() throws IOException, NotEnoughLinesException {
-        String line = reader.readLine();
-        if (line == null) throw new NotEnoughLinesException("Не хватило строки");
-        return line;
+        return reader.readLine();
     }
 
     public Date requestDate() throws NotEnoughLinesException, IOException {
@@ -57,7 +55,9 @@ public class ScriptManager {
         dateFormat.setLenient(false);
         while (true) {
             try {
-                date = dateFormat.parse((requestString()));
+                String dateString = requestString();
+                if (dateString==null) throw new NotEnoughLinesException("Не хватило строки с датой");
+                date = dateFormat.parse(dateString);
                 return date;
             } catch (ParseException e) {
                 continue;

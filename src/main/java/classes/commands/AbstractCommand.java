@@ -29,17 +29,6 @@ public abstract class AbstractCommand implements Serializable {
      */
     public abstract Response execute(CollectionManager collectionManager, ArgsShell args);
 
-    /**
-     * Method to execute command from file
-     * @param reader file reader
-     * @param args arguments from file
-     * @param collectionManager object working with collection
-     * @throws NotEnoughLinesException
-     * @throws WrongArgumentException
-     * @throws NotEnoughArgumentsException
-     */
-
-    public abstract void executeFromFile(BufferedReader reader, String[] args, CollectionManager collectionManager) throws NotEnoughLinesException, WrongArgumentException, NotEnoughArgumentsException, IOException;
 
     public boolean isNeedInput(){
         return false;
