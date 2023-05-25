@@ -56,6 +56,15 @@ public class RemoveLower extends AbstractCommand implements IsNeedInput{
         CLIManager.requestStudyGroup(group);
         return new Object[] {group};
     }
+
+    @Override
+    public Object[] validateFromFile(BufferedReader reader, String[] args) throws NotEnoughLinesException, IOException, NotEnoughArgumentsException, WrongArgumentException {
+        ScriptManager manager = new ScriptManager(reader);
+        StudyGroup group = new StudyGroup();
+        manager.requestStudyGroup(group);
+        return new Object[]{group};
+    }
+
     @Override
     public boolean isNeedInput() {
         return true;

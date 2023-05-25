@@ -36,9 +36,7 @@ public class Server {
                 Thread clientSessionThread = new Thread(clientSession);
                 clientSessionThread.start();
             } catch (IOException e) {
-                throw new RuntimeException(e);
-//                System.out.println("Соединение разорвано, ожидаю нового подключения");
-
+                System.out.println("Соединение разорвано, ожидаю нового подключения");
             }
         }
     }

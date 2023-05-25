@@ -66,4 +66,20 @@ public class Update extends AbstractCommand implements IsNeedInput {
         CLIManager.requestStudyGroup(group);
         return new Object[]{id, group};
     }
+
+    @Override
+    public Object[] validateFromFile(BufferedReader reader, String[] args) throws NotEnoughLinesException, IOException, NotEnoughArgumentsException, WrongArgumentException {
+        if (args.length < 2) throw new NotEnoughArgumentsException("команда требует аргумент \"id\"");
+        int id;
+        try {
+            id = Integer.parseInt(args[1]);
+        } catch (NumberFormatException e) {
+            throw new WrongArgumentException("аргумент должен быть числом! ");
+        }
+        StudyGroup group = new StudyGroup();
+        if (group == null) throw new WrongArgumentException("Элемент с таким id не найден. ");
+        ScriptManager manager = new ScriptManager(reader);
+        manager.requestStudyGroup(group);
+        return new Object[]{id, group};
+    }
 }

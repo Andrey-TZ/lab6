@@ -26,6 +26,7 @@ public class FilterLessThanGroupAdmin extends AbstractCommand implements IsNeedI
 
     @Override
     public Response execute(CollectionManager collectionManager, ArgsShell args)  {
+        collectionManager.addToHistory(this);
         Person groupAdmin = (Person) args.getArguments()[0];
         if (collectionManager.isEmpty()) {
             return new Response("Нет элементов для сравнения");
@@ -38,7 +39,6 @@ public class FilterLessThanGroupAdmin extends AbstractCommand implements IsNeedI
         for (StudyGroup group : groups) {
             response.setData(group.toString());
         }
-        collectionManager.addToHistory(this);
         return response;
     }
 
@@ -70,6 +70,13 @@ public class FilterLessThanGroupAdmin extends AbstractCommand implements IsNeedI
     public Object[] validate(String[] args) throws NotEnoughArgumentsException, WrongArgumentException{
         Person groupAdmin = CLIManager.requestAdminGroup();
         return new Object[] {groupAdmin};
+    }
+
+    @Override
+    public Object[] validateFromFile(BufferedReader reader, String[] args) throws NotEnoughLinesException, IOException {
+        ScriptManager manager = new ScriptManager(reader);
+        Person groupAdmin = manager.requestAdminGroup();
+        return new Object[]{groupAdmin};
     }
 
     @Override

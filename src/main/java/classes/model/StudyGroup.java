@@ -67,10 +67,7 @@ public class StudyGroup implements Comparable<StudyGroup>, Serializable {
         setGroupAdmin(groupAdmin);
     }
 
-    private void setId(int id) throws WrongFieldException {
-        if (id < 1){
-            throw  new WrongFieldException("id должно быть больше 0");
-        }
+    public void setId(int id){
         this.id = id;
     }
 

@@ -16,7 +16,7 @@ public class FIleManager {
         return Files.exists(PATH) && Files.isReadable(PATH) && Files.isWritable(PATH);
     }
 
-    public static void write(Hashtable<Integer, StudyGroup> collection) {
+    public static void writeJson(Hashtable<Integer, StudyGroup> collection) {
         while (true) {
             try {
                 if (check()) {
@@ -31,7 +31,7 @@ public class FIleManager {
 
     }
 
-    public static Hashtable<Integer, StudyGroup> read() {
+    public static Hashtable<Integer, StudyGroup> readJson() {
         while (true) {
             if(check()){
                 return JsonParser.readJson(PATH);

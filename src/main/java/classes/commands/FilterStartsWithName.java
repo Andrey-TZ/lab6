@@ -9,7 +9,6 @@ import exceptions.WrongArgumentException;
 import classes.utils.CollectionManager;
 
 import java.io.BufferedReader;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -43,6 +42,12 @@ public class FilterStartsWithName extends AbstractCommand implements IsNeedInput
         String name = args[1];
         return new Object[]{name};
     }
+
+    @Override
+    public Object[] validateFromFile(BufferedReader reader, String[] args) throws NotEnoughArgumentsException {
+        return validate(args);
+    }
+
     @Override
     public boolean isNeedInput(){
         return true;

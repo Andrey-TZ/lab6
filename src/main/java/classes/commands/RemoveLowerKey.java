@@ -9,6 +9,7 @@ import classes.utils.CollectionManager;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.IOException;
 
 /**
  * Command to remove all elements from the collection, which has keys less than a given one
@@ -51,5 +52,10 @@ public class RemoveLowerKey extends AbstractCommand implements IsNeedInput{
             throw new WrongArgumentException("аргумент должен быть числом!");
         }
         return new Object[]{key};
+    }
+
+    @Override
+    public Object[] validateFromFile(BufferedReader reader, String[] args) throws NotEnoughLinesException, IOException, NotEnoughArgumentsException, WrongArgumentException {
+        return validate(args);
     }
 }

@@ -4,6 +4,7 @@ import classes.commands.AbstractCommand;
 import classes.commands.Save;
 import classes.shells.ArgsShell;
 import classes.model.*;
+import classes.shells.Request;
 import classes.shells.Response;
 import exceptions.NotEnoughArgumentsException;
 import exceptions.WrongArgumentException;
@@ -28,17 +29,13 @@ public class ClientSession implements Runnable {
             System.out.println("Соединение установлено: " + socket.getInetAddress());
 
             while (!socket.isClosed()) {
-                Object inputObject = inputStream.readObject();
-                AbstractCommand command = (AbstractCommand) inputObject;
-                System.out.println(command);
-                ArgsShell inputData = (ArgsShell) inputStream.readObject();
+                Request request = (Request) inputStream.readObject();
+                AbstractCommand command = request.getCommand();
+                ArgsShell inputData = request.getArguments();
                 Response outputData = command.execute(collectionManager, inputData);
-                System.out.println(outputData);
 
                 outputStream.writeObject(outputData);
                 outputStream.flush();
-
-
             }
         } catch (IOException e) {
             collectionManager.save();

@@ -8,10 +8,7 @@ import exceptions.WrongArgumentException;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Class for work with collection.
@@ -28,7 +25,7 @@ public class CollectionManager {
      */
     public CollectionManager() {
         Hashtable<Integer, StudyGroup> groups1;
-        groups1 = FIleManager.read();
+        groups1 = FIleManager.readJson();
         if (groups1 == null) {
             groups1 = new Hashtable<Integer, StudyGroup>();
         }
@@ -43,10 +40,10 @@ public class CollectionManager {
      * @return string with info
      */
     public String info() {
-        return "Информация о коллекции:\n"+
-         "Инициализировано: " + this.creationDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"))
-        + "\nТип коллекции: " + this.groups.getClass().getName()
-        + "\nКоличество элементов: " + groups.size();
+        return "Информация о коллекции:\n" +
+                "Инициализировано: " + this.creationDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"))
+                + "\nТип коллекции: " + this.groups.getClass().getName()
+                + "\nКоличество элементов: " + groups.size();
     }
 
     /**
@@ -73,7 +70,7 @@ public class CollectionManager {
         return null;
     }
 
-    public boolean isExistById(int id){
+    public boolean isExistById(int id) {
         for (StudyGroup group : groups.values()) {
             if (group.getId() == id) {
                 return true;
@@ -82,27 +79,23 @@ public class CollectionManager {
         return false;
     }
 
-    public String update(int id, StudyGroup group){
+    public String update(int id, StudyGroup group) {
         StudyGroup group1 = getById(id);
-        if (group1 == null){
+        if (group1 == null) {
             return "Элемент с id = " + id + "не найден";
         }
+        group.setId(group1.getId());
         group1 = group;
+
         return "Элемент успешно обновлён";
     }
 
     /**
      * Print all elements from collection
      */
-    public String show() {
-        if (groups.isEmpty()) return ("В коллекции пока нет ни одного элемента");
-        else {
-            StringBuilder elements = new StringBuilder();
-            for (StudyGroup group : groups.values()) {
-                elements.append(group.toString()).append("\n");
-            }
-            return elements.toString();
-        }
+    public Collection<StudyGroup> show() {
+        return groups.values();
+
     }
 
     /**
@@ -150,9 +143,10 @@ public class CollectionManager {
      * Save collection to file
      */
     public Response save() {
-        FIleManager.write(groups);
+        FIleManager.writeJson(groups);
         response.setData("Коллекция успешно сохранена!");
-        return response;}
+        return response;
+    }
 
 
     /**

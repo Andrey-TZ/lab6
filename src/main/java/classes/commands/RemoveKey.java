@@ -8,6 +8,7 @@ import exceptions.WrongArgumentException;
 import classes.utils.CollectionManager;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 
 /**
  * Command to delete element from collection by given key
@@ -45,6 +46,11 @@ public class RemoveKey extends AbstractCommand implements IsNeedInput {
             throw new WrongArgumentException("аргумент должен быть числом!");
         }
         return new Object[]{key};
+    }
+
+    @Override
+    public Object[] validateFromFile(BufferedReader reader, String[] args) throws NotEnoughLinesException, IOException, NotEnoughArgumentsException, WrongArgumentException {
+        return validate(args);
     }
 
     @Override

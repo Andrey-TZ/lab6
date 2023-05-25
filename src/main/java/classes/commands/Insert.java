@@ -23,15 +23,14 @@ public class Insert extends AbstractCommand implements IsNeedInput {
     }
 
     @Override
-    public Response execute(CollectionManager collectionManager, ArgsShell args)  {
+    public Response execute(CollectionManager collectionManager, ArgsShell args) {
         int key = (int) args.getArguments()[0];
-        StudyGroup group =  (StudyGroup) args.getArguments()[1];
+        StudyGroup group = (StudyGroup) args.getArguments()[1];
         Response response = new Response();
         try {
             collectionManager.insert(key, group);
             response.setData("Элемент успешно добавлен");
-        }
-        catch (WrongArgumentException e){
+        } catch (WrongArgumentException e) {
             response.setData(e.getMessage());
         }
         collectionManager.addToHistory(this);
@@ -69,6 +68,24 @@ public class Insert extends AbstractCommand implements IsNeedInput {
         CLIManager.requestStudyGroup(group);
         return new Object[]{key, group};
     }
+
     @Override
-    public boolean isNeedInput(){return true;}
+    public Object[] validateFromFile(BufferedReader reader, String[] args) throws NotEnoughLinesException, IOException, NotEnoughArgumentsException, WrongArgumentException {
+        if (args.length < 2) throw new NotEnoughArgumentsException("команда требует аргумент \"key\"");
+        int key;
+        try {
+            key = Integer.parseInt(args[1]);
+        } catch (NumberFormatException e) {
+            throw new WrongArgumentException("аргумент должен быть числом! ");
+        }
+        ScriptManager manager = new ScriptManager(reader);
+        StudyGroup group = new StudyGroup();
+        manager.requestStudyGroup(group);
+        return new Object[]{key, group};
+    }
+
+    @Override
+    public boolean isNeedInput() {
+        return true;
+    }
 }

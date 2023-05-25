@@ -22,15 +22,17 @@ public class History extends AbstractCommand {
     public Response execute(CollectionManager collectionManager, ArgsShell args) {
         String[] history = collectionManager.getHistory();
         Response response = new Response("Последние команды: ");
+        StringBuilder data = new StringBuilder();
         for (int i = 0; i < 14; i++) {
             if (history[i] == null) break;
             if (history[i + 1] == null) {
-                response.setData(history[i] + ".");
+                data.append(history[i]).append(".");
                 break;
             }
-            response.setData(history[i] + ", ");
+            data.append(history[i]).append(", ");
         }
-        if (history[14] != null) response.setData(history[14] + ".");
+        if (history[14] != null) data.append(history[14]).append(".");
+        response.setData(String.valueOf(data));
         collectionManager.addToHistory(this);
         return response;
     }

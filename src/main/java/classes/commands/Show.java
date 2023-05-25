@@ -1,5 +1,6 @@
 package classes.commands;
 
+import classes.model.StudyGroup;
 import classes.shells.ArgsShell;
 import classes.shells.Response;
 import exceptions.NotEnoughArgumentsException;
@@ -8,6 +9,7 @@ import exceptions.WrongArgumentException;
 import classes.utils.CollectionManager;
 
 import java.io.BufferedReader;
+import java.util.Collection;
 
 /**
  * Command to display all elements from the collection
@@ -21,7 +23,13 @@ public class Show extends AbstractCommand {
     @Override
     public Response execute(CollectionManager collectionManager, ArgsShell args) {
         collectionManager.addToHistory(this);
-        return new Response(collectionManager.show());
+        Collection<StudyGroup> elements= collectionManager.show();
+        if (elements.size() == 0) return new Response("В коллекции ещё нет ни одного элемента");
+        Response response = new Response();
+        for(StudyGroup group: elements){
+            response.setData(group.toString());
+        }
+        return response;
     }
 
     @Override
