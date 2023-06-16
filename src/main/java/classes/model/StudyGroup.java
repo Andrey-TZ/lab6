@@ -21,6 +21,7 @@ public class StudyGroup implements Comparable<StudyGroup>, Serializable {
     private FormOfEducation formOfEducation; //Поле не может быть null
     private Semester semesterEnum = null; //Поле может быть null
     private Person groupAdmin = null; //Поле может быть null
+    private String user;
 
     /**
      *

@@ -1,3 +1,5 @@
+import classes.UserAuthorisation;
+import classes.dataBase.UserData;
 import classes.shells.Request;
 import classes.shells.Response;
 import classes.utils.CommandManager;
@@ -27,6 +29,16 @@ public class Client {
              ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
              ObjectInputStream in = new ObjectInputStream(socket.getInputStream())) {
             System.out.println("Подключение к серверу произошло успешно");
+            System.out.println("Чтобы продолжить работу, необходимо авторизоваться");
+            while(true){
+               UserData user= UserAuthorisation.authorise();
+                out.writeObject(user);
+                out.flush();
+                Response response = (Response) in.readObject();
+                response.showData();
+                if(response.isLastResponse()) break;
+            }
+
             while (true) {
                 Request request = CommandManager.start();
                 out.writeObject(request);
