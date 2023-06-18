@@ -1,13 +1,14 @@
 package classes.dataBase;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import classes.model.Person;
+
+import java.io.Reader;
+import java.sql.*;
 
 public class DBManager {
     private final static String createStudyGroupTable = """
             CREATE TABLE IF NOT EXISTS study_groups(
+                key BIGINT NOT NULL UNIQUE CHECK(key > 0),
                 group_id BIGSERIAL PRIMARY KEY,
                 name VARCHAR(20) NOT NULL,
                 coordinateX FLOAT NOT NULL CHECK(coordinateX >= - 478),
@@ -46,8 +47,7 @@ public class DBManager {
             """;
 
 
-
-    public static void main(String[] args){
+    public static void main(String[] args) {
         execute(createAdminGroupTable);
         execute(createSemesterTable);
         execute(createFormOfEducationTable);
@@ -55,9 +55,9 @@ public class DBManager {
         execute(createStudyGroupTable);
     }
 
-    static Connection getDBConnection(){
+    static Connection getDBConnection() {
         Connection dbConnection = null;
-        try{
+        try {
             Class.forName("org.postgresql.Driver");
             String url = "jdbc:postgresql://localhost:5432/studs";
             String login = "postgres";
@@ -73,15 +73,172 @@ public class DBManager {
     }
 
     public static void execute(String command) {
-        try(Connection dbConnection = getDBConnection(); Statement stmnt = dbConnection.createStatement()){
-            stmnt.execute(command);
+        try (Connection dbConnection = getDBConnection(); Statement statement = dbConnection.createStatement()) {
+            statement.execute(command);
             System.out.println("Команда отправлена!");
-        }
-        catch (SQLException e) {
-            throw new RuntimeException(e);
+        } catch (SQLException e) {
+            System.out.println("База данных не отвечает");
         }
     }
 
+    public static ResultSet executeQuery(String command) {
+        try (Connection dbConnection = getDBConnection(); Statement statement = dbConnection.createStatement()) {
+            return statement.executeQuery(command);
+        } catch (SQLException e) {
+            System.out.println("База данных не отвечает");
+        }
+        return null;
+    }
 
+    public static ResultSet getAdmin(int id) {
+        try {
+            Connection dbConnection = getDBConnection();
+            PreparedStatement statement = dbConnection.prepareStatement("SELECT * FROM admins WHERE admin_id = ?");
+            statement.setInt(1, id);
+            return statement.executeQuery();
+        } catch (SQLException e) {
+            System.out.println("База данных не отвечает");
+        }
+        return null;
+
+    }
+
+    public static ResultSet getFormOfEducation(int id) {
+        try {
+            Connection dbConnection = getDBConnection();
+            PreparedStatement statement = dbConnection.prepareStatement("SELECT * FROM forms_of_education WHERE form_id = ?");
+            statement.setInt(1, id);
+            return statement.executeQuery();
+        } catch (SQLException e) {
+            System.out.println("База данных не отвечает");
+        }
+        return null;
+    }
+
+
+    public static ResultSet getSemester(int id) {
+        try {
+            Connection dbConnection = getDBConnection();
+            PreparedStatement statement = dbConnection.prepareStatement("SELECT * FROM semesters WHERE semester_id = ?");
+            statement.setInt(1, id);
+            return statement.executeQuery();
+        } catch (SQLException e) {
+            System.out.println("База данных не отвечает");
+        }
+        return null;
+    }
+
+
+    public static ResultSet getLogin(int id) {
+        try {
+            Connection dbConnection = getDBConnection();
+            PreparedStatement statement = dbConnection.prepareStatement("SELECT user FROM semesters WHERE semester_id = ?");
+            statement.setInt(1, id);
+            return statement.executeQuery();
+        } catch (SQLException e) {
+            System.out.println("База данных не отвечает");
+        }
+        return null;
+    }
+
+
+    public static Integer updAdmin(int id, Person admin) {
+        try {
+            Connection dbConnection = getDBConnection();
+            PreparedStatement statement = dbConnection.prepareStatement("UPDATE admins SET name = ?, birthday = ?, height = ? WHERE admin_id = ?");
+            statement.setString(1, admin.getName());
+            statement.setDate(2, (Date) admin.getBirthdayDate());
+            statement.setFloat(3, admin.getHeight());
+            statement.setInt(4, id);
+            return statement.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("База данных не отвечает");
+        }
+        return 0;
+    }
+
+    public static Integer insertAdmin(Person admin) {
+        try {
+            Connection dbConnection = getDBConnection();
+            PreparedStatement statement = dbConnection.prepareStatement("Insert INTO admins (name, birthday, height) VALUES(?, ?, ?) returning admin_id");
+            statement.setString(1, admin.getName());
+            statement.setDate(2, Date.valueOf(admin.getBirthday()));
+            statement.setFloat(3, admin.getHeight());
+
+            return statement.executeQuery().getInt(1);
+        } catch (SQLException e) {
+            System.out.println("База данных не отвечает");
+        }
+        return null;
+    }
+
+    public static Integer getFormOfEducationID(String form) {
+        try {
+            Connection dbConnection = getDBConnection();
+            PreparedStatement statement = dbConnection.prepareStatement("SELECT form_id FROM forms_of_education WHERE form = ?");
+            statement.setString(1, form);
+            int id = statement.executeQuery().getInt(1);
+            statement.close();
+            return id;
+        } catch (SQLException e) {
+            System.out.println("База данных не отвечает");
+            throw new RuntimeException();
+        }
+    }
+
+    public static Integer getSemesterID(String semester) {
+        try {
+            Connection dbConnection = getDBConnection();
+            PreparedStatement statement = dbConnection.prepareStatement("SELECT semester_id FROM semesters WHERE semester = ?");
+            statement.setString(1, semester);
+            int id = statement.executeQuery().getInt(1);
+            statement.close();
+            return id;
+        } catch (SQLException e) {
+            System.out.println("База данных не отвечает");
+            throw new RuntimeException();
+        }
+    }
+
+    public static boolean updateStudyGroup(int group_id, String name, float coordinateX, float coordinateY, Date creationDate, Long studentsCount, int form, Integer semester, int admin) {
+        try {
+            Connection dbConnection = getDBConnection();
+            PreparedStatement statement = dbConnection.prepareStatement("UPDATE study_groups SET name = ?, coordinatex = ?, coordinatey = ?, creation_date = ?, students_count = ?, form_of_education_id = ?, semester_id = ?, admin_id = ?  WHERE group_id = ?");
+            statement.setString(1, name);
+            statement.setFloat(2, coordinateX);
+            statement.setFloat(3, coordinateY);
+            statement.setDate(4, creationDate);
+            statement.setLong(5, studentsCount);
+            statement.setInt(6, form);
+            statement.setInt(7, semester);
+            statement.setInt(8, admin);
+            statement.setInt(9, group_id);
+            return statement.executeUpdate() != 0;
+        } catch (SQLException e) {
+            System.out.println("База данных не отвечает");
+        }
+        return false;
+    }
+
+    public static boolean insertStudyGroup(int key, String name, float coordinateX, float coordinateY, Date creationDate, Long studentsCount, int form, Integer semester, int admin, String login) {
+        try {
+            Connection dbConnection = getDBConnection();
+            PreparedStatement statement = dbConnection.prepareStatement("INSERT INTO study_groups (key, name, coordinatex, coordinatey, creation_date, students_count, form_of_education_id, semester_id, admin_id, login) VALUES  (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            statement.setInt(1, key);
+            statement.setString(2, name);
+            statement.setFloat(3, coordinateX);
+            statement.setFloat(4, coordinateY);
+            statement.setDate(5, creationDate);
+            statement.setLong(6, studentsCount);
+            statement.setInt(7, form);
+            statement.setInt(8, semester);
+            statement.setInt(9, admin);
+            statement.setString(10, login);
+            return statement.executeUpdate() != 0;
+        } catch (SQLException e) {
+            System.out.println("База данных не отвечает");
+        }
+        return false;
+    }
 
 }

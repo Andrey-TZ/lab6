@@ -6,18 +6,25 @@ import java.io.Serializable;
  * Enum for available semesters for study group
  */
 public enum Semester implements Serializable {
-    SECOND("второй", "SECOND"),
-    FOURTH("четвёртый", "FOURTH"),
-    FIFTH("пятый", "FIFTH"),
-    SIXTH("шестой", "SIXTH");
+    SECOND("второй", "SECOND", 1),
+    FOURTH("четвёртый", "FOURTH", 2),
+    FIFTH("пятый", "FIFTH", 3),
+    SIXTH("шестой", "SIXTH", 4);
 
 
     private final String meaning;
     private final String value;
+    private final int id;
 
-    Semester(String meaning, String value) {
+
+    Semester(String meaning, String value, int id) {
         this.meaning = meaning;
         this.value = value;
+        this.id = id;
+    }
+
+    public int getId() {
+        return id;
     }
 
     @Override

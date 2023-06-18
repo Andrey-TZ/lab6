@@ -30,7 +30,7 @@ public class PersonJsonSerializer implements JsonDeserializer<Person>, JsonSeria
         try {
             Date birthday = new SimpleDateFormat("dd-MM-yyyy").parse(object.get("birthday").getAsString());
             Float height = object.get("height").getAsFloat();
-            return new Person(name, birthday, height);
+            return new Person(1, name, birthday, height);
         } catch (ParseException e) {
             System.out.println("День Рождения человека введен не верно!");
             return null;

@@ -6,6 +6,7 @@ import exceptions.WrongFieldException;
 import java.io.Serializable;
 import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -35,15 +36,16 @@ public class StudyGroup implements Comparable<StudyGroup>, Serializable {
      * @throws EmptyFieldException if given param is null and its invalid
      */
 
-    public StudyGroup(String name, Coordinates coordinates, long studentsCount, FormOfEducation formOfEducation, Semester semesterEnum, Person groupAdmin) throws WrongFieldException, EmptyFieldException {
-        setId(idSetter++);
+    public StudyGroup(int id, String name, Coordinates coordinates, LocalDateTime creationDate, long studentsCount, FormOfEducation formOfEducation, Semester semesterEnum, Person groupAdmin, String user) throws WrongFieldException, EmptyFieldException {
+        this.id = id;
         setName(name);
         setCoordinates(coordinates);
-        this.creationDate = LocalDateTime.now();
+        this.creationDate = creationDate;
         setStudentsCount(studentsCount);
         setFormOfEducation(formOfEducation);
         setSemesterEnum(semesterEnum);
         setGroupAdmin(groupAdmin);
+        this.user = user;
 
     }
 

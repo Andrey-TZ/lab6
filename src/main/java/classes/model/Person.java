@@ -11,6 +11,7 @@ import java.util.Date;
  * Person Class. Used to save Admin group
  */
 public class Person implements Comparable<Person>, Serializable {
+    private int id;
     private String name; //Поле не может быть null, Строка не может быть пустой
     private Date birthday; //Поле не может быть null
     private Float height; //Поле может быть null, Значение поля должно быть больше 0
@@ -26,7 +27,8 @@ public class Person implements Comparable<Person>, Serializable {
      * @throws WrongFieldException при передаче неверного аргумента (например, строки вместо числа)
      */
 
-    public Person(String name, Date birthday, Float height) throws EmptyFieldException, WrongFieldException {
+    public Person(int id, String name, Date birthday, Float height) throws EmptyFieldException, WrongFieldException {
+        this.id = id;
         setName(name);
         setBirthday(birthday);
         setHeight(height);
@@ -36,6 +38,10 @@ public class Person implements Comparable<Person>, Serializable {
         if (name != null && !name.isEmpty()) {
             this.name = name;
         } else throw new EmptyFieldException("Поле \"имя\" не может быть пустым");
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getName() {
@@ -94,5 +100,17 @@ public class Person implements Comparable<Person>, Serializable {
                 return 0;
             }
         }
+    }
+
+    @Override
+    public boolean equals(Object oth){
+        if(oth == this){
+            return true;
+        }
+        if(oth == null || oth.getClass() != this.getClass()){
+            return false;
+        }
+        Person other = (Person) oth;
+        return id == other.id;
     }
 }

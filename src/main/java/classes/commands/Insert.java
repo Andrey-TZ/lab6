@@ -29,8 +29,7 @@ public class Insert extends AbstractCommand implements IsNeedInput {
         group.checkId();
         Response response = new Response();
         try {
-            collectionManager.insert(key, group);
-            response.setData("Элемент успешно добавлен");
+            response.setData(collectionManager.insert(key, group));
         } catch (WrongArgumentException e) {
             response.setData(e.getMessage());
         }
