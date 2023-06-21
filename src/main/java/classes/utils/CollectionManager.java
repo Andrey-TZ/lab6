@@ -14,6 +14,8 @@ import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Class for work with collection.
@@ -24,6 +26,7 @@ public class CollectionManager {
     private int historyIndex = 0;
     private final Hashtable<Integer, StudyGroup> groups = new Hashtable<Integer, StudyGroup>();
     private String login = "";
+    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
 
     /**
      * Constructor. Creates the object to work with collection.
@@ -34,11 +37,23 @@ public class CollectionManager {
         this.creationDate = ZonedDateTime.now();
     }
 
+    private void block() {
+        lock.readLock().lock();
+        lock.writeLock().lock();
+    }
+
+
+    private void unlock() {
+        lock.readLock().unlock();
+        lock.writeLock().unlock();
+    }
+
     public void setLogin(String login) {
         this.login = login;
     }
 
     private void getCollectionFromDB() throws SQLException {
+        block();
         try {
             ResultSet studyGroupsDB = DBManager.executeQuery("SELECT * FROM study_groups");
             if (studyGroupsDB == null) this.clear();
@@ -78,6 +93,7 @@ public class CollectionManager {
         } catch (EmptyFieldException e) {
             throw new RuntimeException(e);
         }
+        unlock();
 
     }
 
@@ -115,6 +131,7 @@ public class CollectionManager {
     }
 
     public String update(int id, StudyGroup group) {
+        block();
         StudyGroup group1 = getById(id);
         if (group1 == null) {
             return "Элемент с id = " + id + " не найден";
@@ -128,9 +145,15 @@ public class CollectionManager {
             Coordinates coordinates = group.getCoordinates();
             if (DBManager.updateStudyGroup(id, group.getName(), coordinates.getX(), coordinates.getY(), Date.valueOf(group.getCreationDate().toLocalDate()), group.getStudentsCount(), form, semester, admin_id)) {
                 group1.update(group);
+                unlock();
                 return "Элемент успешно обновлён";
-            } else return "Не получилось обновить элемент";
+
+            } else {
+                unlock();
+                return "Не получилось обновить элемент";
+            }
         }
+        unlock();
         return "Это элемент был добавлен другим пользователем - вы не можете его изменить!";
 
     }
@@ -167,6 +190,7 @@ public class CollectionManager {
      */
     public String insert(Integer key, StudyGroup group) throws WrongArgumentException {
         if (isKeyExist(key)) return "Элемент с таким ключом уже существует!";
+        block();
         Integer admin = null;
         Integer semester = null;
         if (group.getSemesterEnum() != null) semester = group.getSemesterEnum().getId();
@@ -177,8 +201,10 @@ public class CollectionManager {
         if (id != 0) {
             group.setId(id);
             groups.put(key, group);
+            unlock();
             return "Элемент успешно добавлен";
         }
+        unlock();
         return "Не удалось добавить элемент";
     }
 
@@ -199,14 +225,20 @@ public class CollectionManager {
      * @param key of element
      */
     public String removeByKey(Integer key) {
+        block();
         if (groups.containsKey(key)) {
             if (login.equals(groups.get(key).getUser())) {
                 DBManager.removeStudyGroup(groups.get(key).getId());
                 groups.remove(key);
+                unlock();
                 return "Элемент удалён";
             }
+            unlock();
             return "Этот элемент добавил другой пользователь";
-        } else return ("Элемент с таким ключом не найден!");
+        } else{
+            unlock();
+            return ("Элемент с таким ключом не найден!");
+        }
     }
 
     /**
@@ -223,6 +255,7 @@ public class CollectionManager {
      * @param group element to compare
      */
     public int removeLower(StudyGroup group) {
+        block();
         int score = 0;
         for (Integer key : groups.keySet()) {
             if (groups.get(key).compareTo(group) < 0 && login.equals(groups.get(key).getUser())) {
@@ -231,6 +264,7 @@ public class CollectionManager {
                 }
             }
         }
+        unlock();
         return score;
 
     }
@@ -242,12 +276,13 @@ public class CollectionManager {
      * @return numbers of deleted elements
      */
     public int removeLowerKey(Integer key) {
+        block();
         ArrayList<Integer> deleted = new ArrayList<>();
         for (Integer key_i : groups.keySet()) {
             if (key_i < key && Objects.equals(this.login, groups.get(key_i).getUser())) deleted.add(key_i);
         }
         for (Integer key_i : deleted) groups.remove(key_i);
-
+        unlock();
         return DBManager.removeLowerKeys(key, this.login);
     }
 

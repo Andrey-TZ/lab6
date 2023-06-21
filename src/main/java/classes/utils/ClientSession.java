@@ -15,10 +15,14 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ClientSession implements Runnable {
     Socket socket;
     CollectionManager collectionManager;
+    private final ExecutorService handleService = Executors.newFixedThreadPool(5);
+    private final ExecutorService sendService = Executors.newFixedThreadPool(5);
 
     public ClientSession(Socket socket, CollectionManager collectionManager) {
         this.socket = socket;
@@ -70,14 +74,24 @@ public class ClientSession implements Runnable {
 
             while (!socket.isClosed()) {
                 Request request = (Request) inputStream.readObject();
-                AbstractCommand command = request.getCommand();
-                ArgsShell inputData = request.getArguments();
-                Response outputData = command.execute(collectionManager, inputData);
+                new Thread(() -> {
+                    AbstractCommand command = request.getCommand();
+                    ArgsShell inputData = request.getArguments();
 
-                outputStream.writeObject(outputData);
-                outputStream.flush();
+                    handleService.submit(() -> {
+                        Response outputData = command.execute(collectionManager, inputData);
+                        sendService.submit(() -> {
+                            try {
+                                outputStream.writeObject(outputData);
+                                outputStream.flush();
+                            } catch (IOException e) {
+                                System.out.println("Соединение разорвано, коллекция сохранена в файл");
+                                System.out.println("Ожидаю нового подключения");
+                            }
+                        });
+                    });
+                });
             }
-            new Save().execute(collectionManager, new ArgsShell());
         } catch (IOException e) {
             System.out.println("Соединение разорвано, коллекция сохранена в файл");
             System.out.println("Ожидаю нового подключения");

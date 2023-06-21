@@ -15,9 +15,8 @@ public class Server {
             try (ServerSocket server = new ServerSocket(port)) {
                 Socket clientSocket = server.accept();
                 ClientSession clientSession = new ClientSession(clientSocket, collectionManager);
-                clientSession.run();
-//                Thread clientSessionThread = new Thread(clientSession);
-//                clientSessionThread.start();
+                Thread clientSessionThread = new Thread(clientSession);
+                clientSessionThread.start();
             } catch (IOException e) {
                 System.out.println("Соединение разорвано, ожидаю нового подключения");
             }
