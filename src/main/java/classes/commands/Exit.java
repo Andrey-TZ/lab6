@@ -23,8 +23,7 @@ public class Exit extends AbstractCommand{
     public Response execute(CollectionManager collectionManager, ArgsShell args) {
         System.out.println("Программа будет закрыта");
         collectionManager.addToHistory(this);
-        Response response = new Response(collectionManager.save());
-        System.out.println("Коллекция сохранена");
+        Response response = new Response();
         response.setData("Программа будет закрыта");
         response.setLastResponse();
         return response;

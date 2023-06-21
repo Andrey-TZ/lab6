@@ -82,7 +82,9 @@ public class DBManager {
     }
 
     public static ResultSet executeQuery(String command) {
-        try (Connection dbConnection = getDBConnection(); Statement statement = dbConnection.createStatement()) {
+        try {
+            Connection dbConnection = getDBConnection();
+            Statement statement = dbConnection.createStatement();
             return statement.executeQuery(command);
         } catch (SQLException e) {
             System.out.println("База данных не отвечает");
@@ -94,7 +96,7 @@ public class DBManager {
         try {
             Connection dbConnection = getDBConnection();
             PreparedStatement statement = dbConnection.prepareStatement("SELECT * FROM admins WHERE admin_id = ?");
-            statement.setInt(1, id);
+            statement.setObject(1, id);
             return statement.executeQuery();
         } catch (SQLException e) {
             System.out.println("База данных не отвечает");
@@ -117,16 +119,18 @@ public class DBManager {
 
 
     public static ResultSet getSemester(int id) {
-        try {
-            Connection dbConnection = getDBConnection();
-            PreparedStatement statement = dbConnection.prepareStatement("SELECT * FROM semesters WHERE semester_id = ?");
-            statement.setInt(1, id);
-            return statement.executeQuery();
-        } catch (SQLException e) {
-            System.out.println("База данных не отвечает");
-        }
-        return null;
+        try {Connection dbConnection = getDBConnection();
+        PreparedStatement statement = dbConnection.prepareStatement("SELECT * FROM semesters WHERE semester_id = ?");
+        statement.setInt(1, id);
+        return statement.executeQuery();
+    } catch(
+    SQLException e)
+
+    {
+        System.out.println("База данных не отвечает");
     }
+        return null;
+}
 
 
     public static ResultSet getLogin(int id) {
@@ -143,12 +147,11 @@ public class DBManager {
 
 
     public static Integer updAdmin(int id, Person admin) {
-        try {
-            Connection dbConnection = getDBConnection();
-            PreparedStatement statement = dbConnection.prepareStatement("UPDATE admins SET name = ?, birthday = ?, height = ? WHERE admin_id = ?");
+        try (Connection dbConnection = getDBConnection();
+             PreparedStatement statement = dbConnection.prepareStatement("UPDATE admins SET name = ?, birthday = ?, height = ? WHERE admin_id = ?")) {
             statement.setString(1, admin.getName());
             statement.setDate(2, (Date) admin.getBirthdayDate());
-            statement.setFloat(3, admin.getHeight());
+            statement.setObject(3, admin.getHeight());
             statement.setInt(4, id);
             return statement.executeUpdate();
         } catch (SQLException e) {
@@ -158,14 +161,16 @@ public class DBManager {
     }
 
     public static Integer insertAdmin(Person admin) {
-        try {
-            Connection dbConnection = getDBConnection();
-            PreparedStatement statement = dbConnection.prepareStatement("Insert INTO admins (name, birthday, height) VALUES(?, ?, ?) returning admin_id");
+        try (
+                Connection dbConnection = getDBConnection();
+                PreparedStatement statement = dbConnection.prepareStatement("Insert INTO admins (name, birthday, height) VALUES(?, ?, ?) returning admin_id");
+        ) {
             statement.setString(1, admin.getName());
             statement.setDate(2, Date.valueOf(admin.getBirthday()));
-            statement.setFloat(3, admin.getHeight());
-
-            return statement.executeQuery().getInt(1);
+            statement.setObject(3, admin.getHeight());
+            ResultSet res = statement.executeQuery();
+            res.next();
+            return res.getInt(1);
         } catch (SQLException e) {
             System.out.println("База данных не отвечает");
         }
@@ -173,57 +178,65 @@ public class DBManager {
     }
 
     public static Integer getFormOfEducationID(String form) {
-        try {
-            Connection dbConnection = getDBConnection();
-            PreparedStatement statement = dbConnection.prepareStatement("SELECT form_id FROM forms_of_education WHERE form = ?");
+        try (
+                Connection dbConnection = getDBConnection();
+                PreparedStatement statement = dbConnection.prepareStatement("SELECT form_id FROM forms_of_education WHERE form = ?");
+        ) {
             statement.setString(1, form);
-            int id = statement.executeQuery().getInt(1);
-            statement.close();
+            ResultSet res = statement.executeQuery();
+            res.next();
+            Integer id = res.getInt(1);
             return id;
         } catch (SQLException e) {
             System.out.println("База данных не отвечает");
-            throw new RuntimeException();
+            throw new RuntimeException(e);
         }
     }
 
     public static Integer getSemesterID(String semester) {
-        try {
-            Connection dbConnection = getDBConnection();
-            PreparedStatement statement = dbConnection.prepareStatement("SELECT semester_id FROM semesters WHERE semester = ?");
+        try (
+                Connection dbConnection = getDBConnection();
+                PreparedStatement statement = dbConnection.prepareStatement("SELECT semester_id FROM semesters WHERE semester = ?");
+        ) {
             statement.setString(1, semester);
-            int id = statement.executeQuery().getInt(1);
-            statement.close();
-            return id;
+            ResultSet res = statement.executeQuery();
+            res.next();
+            return res.getInt(1);
         } catch (SQLException e) {
             System.out.println("База данных не отвечает");
             throw new RuntimeException();
         }
     }
 
-    public static boolean updateStudyGroup(int group_id, String name, float coordinateX, float coordinateY, Date creationDate, Long studentsCount, int form, Integer semester, int admin) {
-        try {
-            Connection dbConnection = getDBConnection();
-            PreparedStatement statement = dbConnection.prepareStatement("UPDATE study_groups SET name = ?, coordinatex = ?, coordinatey = ?, creation_date = ?, students_count = ?, form_of_education_id = ?, semester_id = ?, admin_id = ?  WHERE group_id = ?");
+    public static boolean updateStudyGroup(int group_id, String name, float coordinateX, float coordinateY, Date
+            creationDate, Long studentsCount, int form, Integer semester, Integer admin) {
+        try (
+                Connection dbConnection = getDBConnection();
+                PreparedStatement statement = dbConnection.prepareStatement("UPDATE study_groups SET name = ?, coordinatex = ?, coordinatey = ?, creation_date = ?, students_count = ?, form_of_education_id = ?, semester_id = ?, admin_id = ?  WHERE group_id = ?");
+        ) {
             statement.setString(1, name);
             statement.setFloat(2, coordinateX);
             statement.setFloat(3, coordinateY);
             statement.setDate(4, creationDate);
             statement.setLong(5, studentsCount);
             statement.setInt(6, form);
-            statement.setInt(7, semester);
-            statement.setInt(8, admin);
+            statement.setObject(7, semester);
+            statement.setObject(8, admin);
             statement.setInt(9, group_id);
             return statement.executeUpdate() != 0;
         } catch (SQLException e) {
             System.out.println("База данных не отвечает");
+
         }
         return false;
     }
 
-    public static boolean insertStudyGroup(int key, String name, float coordinateX, float coordinateY, Date creationDate, Long studentsCount, int form, Integer semester, int admin, String login) {
-        try {
-            Connection dbConnection = getDBConnection();
-            PreparedStatement statement = dbConnection.prepareStatement("INSERT INTO study_groups (key, name, coordinatex, coordinatey, creation_date, students_count, form_of_education_id, semester_id, admin_id, login) VALUES  (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    public static int insertStudyGroup(int key, String name, float coordinateX, float coordinateY, Date
+            creationDate, Long studentsCount, int form, Integer semester, Integer admin, String login) {
+        try (
+                Connection dbConnection = getDBConnection();
+                PreparedStatement statement = dbConnection.prepareStatement("INSERT INTO study_groups (key, name, coordinatex, coordinatey, creation_date, students_count, form_of_education_id, semester_id, admin_id, login) VALUES  (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) returning semester_id");
+        ) {
             statement.setInt(1, key);
             statement.setString(2, name);
             statement.setFloat(3, coordinateX);
@@ -231,14 +244,44 @@ public class DBManager {
             statement.setDate(5, creationDate);
             statement.setLong(6, studentsCount);
             statement.setInt(7, form);
-            statement.setInt(8, semester);
-            statement.setInt(9, admin);
+            statement.setObject(8, semester);
+            statement.setObject(9, admin);
             statement.setString(10, login);
-            return statement.executeUpdate() != 0;
+            ResultSet resultSet = statement.executeQuery();
+            resultSet.next();
+            return resultSet.getInt(1);
         } catch (SQLException e) {
             System.out.println("База данных не отвечает");
         }
-        return false;
+        return 0;
+    }
+
+    public static boolean removeStudyGroup(int id) {
+        try (Connection dbConnection = getDBConnection()) {
+            PreparedStatement statement = dbConnection.prepareStatement("DELETE FROM studs.public.study_groups WHERE studs.public.study_groups.group_id = ?");
+            statement.setInt(1, id);
+            return statement.executeUpdate() != 0;
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+
+    public static Integer removeLowerKeys(int key, String login) {
+        try (Connection dbConnection = getDBConnection();
+             PreparedStatement statement1 = dbConnection.prepareStatement("""
+                     Delete From studs.public.admins WHERE admin_id in (SELECT admin_id FROM studs.public.study_groups WHERE studs.public.study_groups.key < ? AND login = ?);
+                                          
+                     """);
+             PreparedStatement statement2 = dbConnection.prepareStatement("DELETE FROM studs.public.study_groups WHERE studs.public.study_groups.key < ? and login = ?;")) {
+            statement1.setInt(1, key);
+            statement1.setString(2, login);
+            statement2.setInt(1, key);
+            statement2.setString(2, login);
+            statement1.executeUpdate();
+            return statement2.executeUpdate();
+        } catch (SQLException e) {
+            return 0;
+        }
     }
 
 }

@@ -8,8 +8,10 @@ public class UserAuthorisation {
     public static UserData authorise(){
         while(true){
             System.out.print("Введите 1, если вы уже зарегистрированы, или 0, если хотите зарегистрироваться: ");
+            String variant = scanner.nextLine();
             try {
-                int var = scanner.nextInt();
+                int var = Integer.parseInt(variant);
+
                 if (var == 0){
                     return register();
                 }

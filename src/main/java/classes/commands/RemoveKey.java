@@ -24,11 +24,9 @@ public class RemoveKey extends AbstractCommand implements IsNeedInput {
     public Response execute(CollectionManager collectionManager, ArgsShell args) {
         int key = (int) args.getArguments()[0];
         collectionManager.addToHistory(this);
-        if (collectionManager.isKeyExist(key)) {
-            collectionManager.removeByKey(key);
-            return new Response("Элемент с ключом \"" + key + "\" успешно удалён");
-        }
-        return new Response("Элемент с ключом \"" + key + "\" не существует");
+
+        return new Response(collectionManager.removeByKey(key));
+
     }
 
     @Override

@@ -3,7 +3,9 @@ package classes.utils;
 import classes.commands.AbstractCommand;
 import classes.dataBase.DBManager;
 import classes.model.*;
+import exceptions.EmptyFieldException;
 import exceptions.WrongArgumentException;
+import exceptions.WrongFieldException;
 
 import java.sql.Date;
 import java.sql.ResultSet;
@@ -21,41 +23,59 @@ public class CollectionManager {
     private final ZonedDateTime creationDate;
     private int historyIndex = 0;
     private final Hashtable<Integer, StudyGroup> groups = new Hashtable<Integer, StudyGroup>();
-    private final String login;
+    private String login = "";
 
     /**
      * Constructor. Creates the object to work with collection.
      */
-    public CollectionManager(String login) {
-        this.login = login;
+    public CollectionManager() throws SQLException {
         getCollectionFromDB();
         this.commandsHistory = new String[15];
         this.creationDate = ZonedDateTime.now();
     }
 
-    private void getCollectionFromDB() {
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
+    private void getCollectionFromDB() throws SQLException {
         try {
             ResultSet studyGroupsDB = DBManager.executeQuery("SELECT * FROM study_groups");
             if (studyGroupsDB == null) this.clear();
             else {
                 while (studyGroupsDB.next()) {
                     Person adminGroup = null;
-                    Integer admin_id = studyGroupsDB.getInt("admin_id");
-                    ResultSet admin = DBManager.getAdmin(admin_id);
-                    if (admin != null && admin.next()) {
+
+                    if (studyGroupsDB.getObject("admin_id") != null) {
+                        ResultSet admin = DBManager.getAdmin(studyGroupsDB.getInt("admin_id"));
+                        admin.next();
                         adminGroup = new Person(admin.getInt(1), admin.getString(2), admin.getDate(3), admin.getFloat(4));
+                        admin.close();
                     }
-                    admin.close();
+
 
                     Coordinates coordinates = new Coordinates(studyGroupsDB.getFloat("coordinateX"), studyGroupsDB.getFloat("coordinateY"));
-                    FormOfEducation form = FormOfEducation.valueOf(DBManager.getFormOfEducation(studyGroupsDB.getInt("form_of_education_id")).getString(2));
-                    Semester semester = Semester.valueOf(DBManager.getFormOfEducation(studyGroupsDB.getInt("semester_id")).getString(2));
-                    StudyGroup group = new StudyGroup(studyGroupsDB.getInt("group_id"), studyGroupsDB.getString("name"), coordinates, LocalDateTime.parse(studyGroupsDB.getDate("creation_date").toString()), studyGroupsDB.getLong("students_count"), form, semester, adminGroup, studyGroupsDB.getString("login"));
+                    ResultSet res_form = DBManager.getFormOfEducation(studyGroupsDB.getInt("form_of_education_id"));
+                    res_form.next();
+                    FormOfEducation form = FormOfEducation.valueOf(res_form.getString(2));
+                    res_form.close();
+                    Semester semester = null;
+                    if (studyGroupsDB.getObject("semester_id") != null) {
+                        ResultSet res_sem = DBManager.getSemester(studyGroupsDB.getInt("semester_id"));
+                        res_sem.next();
+                        semester = Semester.valueOf(res_sem.getString(2));
+                        res_sem.close();
+                    }
+                    StudyGroup group = new StudyGroup(studyGroupsDB.getInt("group_id"), studyGroupsDB.getString("name"), coordinates, (studyGroupsDB.getTimestamp("creation_date").toLocalDateTime()), studyGroupsDB.getLong("students_count"), form, semester, adminGroup, studyGroupsDB.getString("login"));
                     this.groups.put(studyGroupsDB.getInt("key"), group);
                 }
                 studyGroupsDB.close();
             }
-        } catch (Exception e) {
+        } catch (WrongFieldException e) {
+            throw new RuntimeException(e);
+//        } catch (SQLException e) {
+//            throw new RuntimeException(e);
+        } catch (EmptyFieldException e) {
             throw new RuntimeException(e);
         }
 
@@ -96,27 +116,22 @@ public class CollectionManager {
 
     public String update(int id, StudyGroup group) {
         StudyGroup group1 = getById(id);
-
         if (group1 == null) {
             return "Элемент с id = " + id + " не найден";
         }
-        try {
-            if (!login.equals(DBManager.getLogin(id).getString(1))) {
-                Integer admin_id = updateAdmin(group1, group);
-                int form = DBManager.getFormOfEducationID(group.getFormOfEducation().toString());
-                Integer semester;
-                if (group.getSemesterEnum() == null) semester = null;
-                else semester = DBManager.getSemesterID(group.getSemesterEnum().toString());
-                Coordinates coordinates = group.getCoordinates();
-                if (DBManager.updateStudyGroup(group.getId(), group.getName(), coordinates.getX(), coordinates.getY(), Date.valueOf(group.getCreationDate()), group.getStudentsCount(), form, semester, admin_id)) {
-                    group1.update(group);
-                    return "Элемент успешно обновлён";
-                } else return "Не получилось обновить элемент";
-            }
-            return "Это элемент был добавлен другим пользователем - вы не можете его изменить!";
-        } catch (SQLException e) {
-            return "Не получилось обновить элемент";
+        if (login.equals(group1.getUser())) {
+            Integer admin_id = updateAdmin(group1, group);
+            int form = group.getFormOfEducation().getId();
+            Integer semester;
+            if (group.getSemesterEnum() == null) semester = null;
+            else semester = group.getSemesterEnum().getId();
+            Coordinates coordinates = group.getCoordinates();
+            if (DBManager.updateStudyGroup(id, group.getName(), coordinates.getX(), coordinates.getY(), Date.valueOf(group.getCreationDate().toLocalDate()), group.getStudentsCount(), form, semester, admin_id)) {
+                group1.update(group);
+                return "Элемент успешно обновлён";
+            } else return "Не получилось обновить элемент";
         }
+        return "Это элемент был добавлен другим пользователем - вы не можете его изменить!";
 
     }
 
@@ -124,7 +139,7 @@ public class CollectionManager {
         Integer admin_id;
         Person admin = newGroup.getGroupAdmin();
         Person admin1 = oldGroup.getGroupAdmin();
-        if (!newGroup.getGroupAdmin().equals(oldGroup.getGroupAdmin())) {
+        if (!Objects.equals(oldGroup.getGroupAdmin(), newGroup.getGroupAdmin())) {
             if (newGroup.getGroupAdmin() == null) admin_id = null;
             else if (oldGroup.getGroupAdmin() == null) {
                 admin_id = DBManager.insertAdmin(newGroup.getGroupAdmin());
@@ -132,7 +147,8 @@ public class CollectionManager {
                 DBManager.updAdmin(admin1.getId(), admin);
                 admin_id = admin1.getId();
             }
-        } else admin_id = admin1.getId();
+        } else if (oldGroup.getGroupAdmin() == null) admin_id = null;
+        else admin_id = admin1.getId();
         return admin_id;
     }
 
@@ -153,9 +169,13 @@ public class CollectionManager {
         if (isKeyExist(key)) return "Элемент с таким ключом уже существует!";
         Integer admin = null;
         Integer semester = null;
-        if(group.getSemesterEnum() != null) semester = group.getSemesterEnum().getId();
-        if (group.getGroupAdmin() != null) admin = group.getGroupAdmin().getId();
-        if (DBManager.insertStudyGroup(key, group.getName(), group.getCoordinates().getX(), group.getCoordinates().getY(), Date.valueOf(group.getCreationDate()), group.getStudentsCount(), group.getFormOfEducation().getId(), semester, admin, login)){
+        if (group.getSemesterEnum() != null) semester = group.getSemesterEnum().getId();
+        if (group.getGroupAdmin() != null) {
+            admin = DBManager.insertAdmin(group.getGroupAdmin());
+        }
+        int id = DBManager.insertStudyGroup(key, group.getName(), group.getCoordinates().getX(), group.getCoordinates().getY(), Date.valueOf(group.getCreationDate().toLocalDate()), group.getStudentsCount(), group.getFormOfEducation().getId(), semester, admin, login);
+        if (id != 0) {
+            group.setId(id);
             groups.put(key, group);
             return "Элемент успешно добавлен";
         }
@@ -163,7 +183,7 @@ public class CollectionManager {
     }
 
     /**
-     * Checking is element with this key exist
+     * Checking is the element with this key exists
      *
      * @param key of element in collection
      * @return true if element with this key exist
@@ -178,10 +198,15 @@ public class CollectionManager {
      *
      * @param key of element
      */
-    public void removeByKey(Integer key) {
+    public String removeByKey(Integer key) {
         if (groups.containsKey(key)) {
-            groups.remove(key);
-        } else System.out.println("Элемент с таким ключом не найден!");
+            if (login.equals(groups.get(key).getUser())) {
+                DBManager.removeStudyGroup(groups.get(key).getId());
+                groups.remove(key);
+                return "Элемент удалён";
+            }
+            return "Этот элемент добавил другой пользователь";
+        } else return ("Элемент с таким ключом не найден!");
     }
 
     /**
@@ -191,14 +216,6 @@ public class CollectionManager {
         groups.clear();
     }
 
-    /**
-     * Save collection to file
-     */
-    public String save() {
-        FIleManager.writeJson(groups);
-        return "Коллекция успешно сохранена!";
-    }
-
 
     /**
      * Remove less elements
@@ -206,13 +223,15 @@ public class CollectionManager {
      * @param group element to compare
      */
     public int removeLower(StudyGroup group) {
-        ArrayList<Integer> deleted_groups = new ArrayList<>();
+        int score = 0;
         for (Integer key : groups.keySet()) {
-            if (groups.get(key).compareTo(group) < 0) deleted_groups.add(key);
-
+            if (groups.get(key).compareTo(group) < 0 && login.equals(groups.get(key).getUser())) {
+                if (DBManager.removeStudyGroup(groups.get(key).getId())) {
+                    groups.remove(key);
+                }
+            }
         }
-        for (Integer key : deleted_groups) groups.remove(key);
-        return deleted_groups.size();
+        return score;
 
     }
 
@@ -220,16 +239,16 @@ public class CollectionManager {
      * Remove elements with less key
      *
      * @param key key to compare
-     * @return
+     * @return numbers of deleted elements
      */
     public int removeLowerKey(Integer key) {
         ArrayList<Integer> deleted = new ArrayList<>();
         for (Integer key_i : groups.keySet()) {
-            if (key_i < key) deleted.add(key_i);
+            if (key_i < key && Objects.equals(this.login, groups.get(key_i).getUser())) deleted.add(key_i);
         }
         for (Integer key_i : deleted) groups.remove(key_i);
 
-        return deleted.size();
+        return DBManager.removeLowerKeys(key, this.login);
     }
 
     /**

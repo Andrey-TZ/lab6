@@ -31,7 +31,6 @@ public class ClientSession implements Runnable {
             ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
             ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
             System.out.println("Соединение установлено: " + socket.getInetAddress());
-            String user_login;
             while (!socket.isClosed()) {
                 Response response = new Response();
                 UserData user = (UserData) inputStream.readObject();
@@ -39,7 +38,7 @@ public class ClientSession implements Runnable {
                     if (UsersManager.checkUser(user)) {
                         response.setData("Вы успешно авторизованы");
                         response.setLastResponse();
-                        user_login = user.getLogin();
+                        collectionManager.setLogin(user.getLogin());
                         outputStream.writeObject(response);
                         break;
                     }
@@ -49,10 +48,14 @@ public class ClientSession implements Runnable {
                     }
                 }
                 else {
-                    if (UsersManager.addUser(user)){
+                    if (UsersManager.checkLogin(user.getLogin())){
+                        response.setData("Пользователь с таким логином уже существует");
+                        outputStream.writeObject(response);
+                    }
+                    else if (UsersManager.addUser(user)){
                         response.setData("Вы успешно зарегистрированы и авторизованы");
                         response.setLastResponse();
-                        user_login = user.getLogin();
+                        collectionManager.setLogin(user.getLogin());
                         outputStream.writeObject(response);
                         break;
                     }
@@ -76,7 +79,6 @@ public class ClientSession implements Runnable {
             }
             new Save().execute(collectionManager, new ArgsShell());
         } catch (IOException e) {
-            collectionManager.save();
             System.out.println("Соединение разорвано, коллекция сохранена в файл");
             System.out.println("Ожидаю нового подключения");
         } catch (ClassNotFoundException e) {

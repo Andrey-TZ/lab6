@@ -25,13 +25,12 @@ public class StudyGroup implements Comparable<StudyGroup>, Serializable {
     private String user;
 
     /**
-     *
-     * @param name name of the group
-     * @param coordinates coordinates of the group
-     * @param studentsCount counts of students in group
+     * @param name            name of the group
+     * @param coordinates     coordinates of the group
+     * @param studentsCount   counts of students in group
      * @param formOfEducation form of education in group
-     * @param semesterEnum semester of group
-     * @param groupAdmin group admin
+     * @param semesterEnum    semester of group
+     * @param groupAdmin      group admin
      * @throws WrongFieldException if given param takes an invalid value
      * @throws EmptyFieldException if given param is null and its invalid
      */
@@ -49,17 +48,15 @@ public class StudyGroup implements Comparable<StudyGroup>, Serializable {
 
     }
 
-    public StudyGroup(){
+    public StudyGroup() {
         this.id = hashCode();
         this.creationDate = LocalDateTime.now();
     }
 
 
-
-
     public StudyGroup(int id, String name, Coordinates coordinates, LocalDateTime creationDate, long studentsCount, FormOfEducation formOfEducation, Semester semesterEnum, Person groupAdmin) throws WrongFieldException, EmptyFieldException {
         idSetter = id;
-        idSetter ++;
+        idSetter++;
         setId(id);
         setName(name);
         setCoordinates(coordinates);
@@ -70,7 +67,7 @@ public class StudyGroup implements Comparable<StudyGroup>, Serializable {
         setGroupAdmin(groupAdmin);
     }
 
-    public void setId(int id){
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -80,6 +77,10 @@ public class StudyGroup implements Comparable<StudyGroup>, Serializable {
 
     public String getName() {
         return name;
+    }
+
+    public String getUser() {
+        return user;
     }
 
     public void setName(String name) throws EmptyFieldException {
@@ -100,7 +101,6 @@ public class StudyGroup implements Comparable<StudyGroup>, Serializable {
     }
 
 
-
     public long getStudentsCount() {
         return studentsCount;
     }
@@ -111,8 +111,8 @@ public class StudyGroup implements Comparable<StudyGroup>, Serializable {
 
     }
 
-    public String getCreationDate(){
-        return creationDate.toString();
+    public LocalDateTime getCreationDate() {
+        return creationDate;
     }
 
     public FormOfEducation getFormOfEducation() {
@@ -142,6 +142,7 @@ public class StudyGroup implements Comparable<StudyGroup>, Serializable {
 
     /**
      * Get study group fields
+     *
      * @return String with study group object fields
      */
 
@@ -151,7 +152,7 @@ public class StudyGroup implements Comparable<StudyGroup>, Serializable {
                 "id = " + id + ":" +
                 "\nназвание: '" + name + "'" +
                 ", координаты: " + coordinates +
-                ", дата создания: " + creationDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")) +
+                ", дата создания: " + creationDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) +
                 ", количество студентов: " + studentsCount +
                 ", форма обучения: " + formOfEducation +
                 ", семестр: " + semesterEnum +
@@ -169,21 +170,20 @@ public class StudyGroup implements Comparable<StudyGroup>, Serializable {
     }
 
 
-    public void update(StudyGroup obj){
+    public void update(StudyGroup obj) {
         this.name = obj.getName();
         this.studentsCount = obj.getStudentsCount();
         this.groupAdmin = obj.getGroupAdmin();
-        this.coordinates=obj.getCoordinates();
+        this.coordinates = obj.getCoordinates();
         this.formOfEducation = obj.getFormOfEducation();
         this.semesterEnum = obj.getSemesterEnum();
     }
 
-    public void checkId(){
-        if (id >= idSetter){
+    public void checkId() {
+        if (id >= idSetter) {
             idSetter = id;
             idSetter++;
-        }
-        else{
+        } else {
             this.setId(idSetter++);
         }
     }

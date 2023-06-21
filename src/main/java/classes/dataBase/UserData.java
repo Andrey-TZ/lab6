@@ -2,10 +2,8 @@ package classes.dataBase;
 
 import java.io.Serializable;
 import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 
 public class UserData implements Serializable {
     private final String login;
@@ -44,6 +42,7 @@ public class UserData implements Serializable {
             while (hashPassword.length() < 32) {
                 hashPassword = "0" + hashPassword;
             }
+            System.out.println(hashPassword);
             return hashPassword;
         }
         catch (NoSuchAlgorithmException e){

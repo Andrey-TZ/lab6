@@ -27,6 +27,10 @@ public enum Semester implements Serializable {
         return id;
     }
 
+    public String getValue() {
+        return value;
+    }
+
     @Override
     public String toString() {
         return meaning;
