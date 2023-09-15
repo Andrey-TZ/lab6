@@ -1,5 +1,6 @@
 package classes.commands;
 
+import classes.dataBase.UserData;
 import classes.shells.ArgsShell;
 import classes.shells.Response;
 import exceptions.NotEnoughArgumentsException;
@@ -22,7 +23,7 @@ public class PrintUniqueStudentsCount extends AbstractCommand {
 
 
     @Override
-    public Response execute(CollectionManager collectionManager, ArgsShell args) {
+    public Response execute(CollectionManager collectionManager, ArgsShell args, UserData user) {
         Response response = new Response("Все уникальные значения \"students count\": ");
         int index = 0;
         Set<Long> uniqueCounts = collectionManager.getUniqueStudentsCount();
@@ -35,7 +36,7 @@ public class PrintUniqueStudentsCount extends AbstractCommand {
             output.append(" ");
         }
         response.setData(output.toString());
-        collectionManager.addToHistory(this);
+        collectionManager.addToHistory(this, user);
         return response;
     }
 }

@@ -1,5 +1,6 @@
 package classes.commands;
 
+import classes.dataBase.UserData;
 import classes.shells.ArgsShell;
 import classes.shells.Response;
 import exceptions.NotEnoughArgumentsException;
@@ -24,10 +25,8 @@ public abstract class AbstractCommand implements Serializable {
     /**
      *  Method to execute command
      * @param collectionManager object working with collection
-     * @throws NotEnoughArgumentsException  when argument's count does not match requirements.
-     * @throws WrongArgumentException when argument doesn't match requirements.
      */
-    public abstract Response execute(CollectionManager collectionManager, ArgsShell args);
+    public abstract Response execute(CollectionManager collectionManager, ArgsShell args, UserData user);
 
 
     public boolean isNeedInput(){

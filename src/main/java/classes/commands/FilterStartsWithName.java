@@ -1,5 +1,6 @@
 package classes.commands;
 
+import classes.dataBase.UserData;
 import classes.model.StudyGroup;
 import classes.shells.ArgsShell;
 import classes.shells.Response;
@@ -21,14 +22,14 @@ public class FilterStartsWithName extends AbstractCommand implements IsNeedInput
     }
 
     @Override
-    public Response execute(CollectionManager collectionManager, ArgsShell args) {
+    public Response execute(CollectionManager collectionManager, ArgsShell args, UserData user) {
         String name = (String) args.getArguments()[0];
         Set<StudyGroup> groups = collectionManager.filterStartsWithName(name);
         Response response = new Response("Группы, начинающиеся с \"" + name + "\":");
         for (StudyGroup group : groups) {
             response.setData(group.toString());
         }
-        collectionManager.addToHistory(this);
+        collectionManager.addToHistory(this, user);
         return response;
     }
 

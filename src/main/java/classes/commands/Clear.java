@@ -1,5 +1,6 @@
 package classes.commands;
 
+import classes.dataBase.UserData;
 import classes.shells.ArgsShell;
 import classes.shells.Response;
 import exceptions.NotEnoughArgumentsException;
@@ -20,11 +21,11 @@ public class Clear extends AbstractCommand {
     }
 
     @Override
-    public Response execute(CollectionManager collectionManager, ArgsShell args) {
-        collectionManager.clear();
-        collectionManager.addToHistory(this);
+    public Response execute(CollectionManager collectionManager, ArgsShell args, UserData user) {
+        collectionManager.clear(user);
+        collectionManager.addToHistory(this, user);
         Response response = new Response();
-        response.setData("Коллекция успешно ощищена");
+        response.setData("Коллекция успешно очищена");
         return response;
     }
 }

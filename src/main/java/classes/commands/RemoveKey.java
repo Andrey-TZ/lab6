@@ -1,5 +1,6 @@
 package classes.commands;
 
+import classes.dataBase.UserData;
 import classes.shells.ArgsShell;
 import classes.shells.Response;
 import exceptions.NotEnoughArgumentsException;
@@ -21,11 +22,11 @@ public class RemoveKey extends AbstractCommand implements IsNeedInput {
 
 
     @Override
-    public Response execute(CollectionManager collectionManager, ArgsShell args) {
+    public Response execute(CollectionManager collectionManager, ArgsShell args, UserData user) {
         int key = (int) args.getArguments()[0];
-        collectionManager.addToHistory(this);
+        collectionManager.addToHistory(this, user);
 
-        return new Response(collectionManager.removeByKey(key));
+        return new Response(collectionManager.removeByKey(key, user));
 
     }
 

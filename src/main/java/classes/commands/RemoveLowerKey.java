@@ -1,5 +1,6 @@
 package classes.commands;
 
+import classes.dataBase.UserData;
 import classes.shells.ArgsShell;
 import classes.shells.Response;
 import exceptions.NotEnoughArgumentsException;
@@ -23,10 +24,10 @@ public class RemoveLowerKey extends AbstractCommand implements IsNeedInput{
 
 
     @Override
-    public Response execute(CollectionManager collectionManager, ArgsShell args) {
+    public Response execute(CollectionManager collectionManager, ArgsShell args, UserData user) {
         int key = (int) args.getArguments()[0];
-        int deleted = collectionManager.removeLowerKey(key);
-        collectionManager.addToHistory(this);
+        int deleted = collectionManager.removeLowerKey(key, user);
+        collectionManager.addToHistory(this, user);
         if (deleted == 0)return new Response("Ни один элемент не удалён");
         return new Response("Удалено элементов: " + deleted);
 

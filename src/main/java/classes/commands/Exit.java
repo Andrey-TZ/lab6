@@ -1,5 +1,6 @@
 package classes.commands;
 
+import classes.dataBase.UserData;
 import classes.shells.ArgsShell;
 import classes.shells.Response;
 import exceptions.NotEnoughArgumentsException;
@@ -20,9 +21,9 @@ public class Exit extends AbstractCommand{
     }
 
     @Override
-    public Response execute(CollectionManager collectionManager, ArgsShell args) {
+    public Response execute(CollectionManager collectionManager, ArgsShell args, UserData user) {
         System.out.println("Программа будет закрыта");
-        collectionManager.addToHistory(this);
+        collectionManager.addToHistory(this, user);
         Response response = new Response();
         response.setData("Программа будет закрыта");
         response.setLastResponse();

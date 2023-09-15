@@ -3,7 +3,7 @@ package classes;
 import classes.dataBase.UserData;
 import java.util.Scanner;
 
-public class UserAuthorisation {
+public class UserAuthorisationHandler {
     private static final Scanner scanner = new Scanner(System.in);
     public static UserData authorise(){
         while(true){
@@ -23,10 +23,7 @@ public class UserAuthorisation {
                 System.out.println("Надо ввести число!");
             }
         }
-
-
     }
-
     private static UserData logIn(){
         String login, password;
         while (true) {

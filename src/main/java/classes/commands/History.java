@@ -1,5 +1,6 @@
 package classes.commands;
 
+import classes.dataBase.UserData;
 import classes.shells.ArgsShell;
 import classes.shells.Response;
 import exceptions.NotEnoughArgumentsException;
@@ -8,6 +9,7 @@ import exceptions.WrongArgumentException;
 import classes.utils.CollectionManager;
 
 import java.io.BufferedReader;
+import java.util.ArrayList;
 
 /**
  * Command to display the last 15 used commands
@@ -19,21 +21,16 @@ public class History extends AbstractCommand {
     }
 
     @Override
-    public Response execute(CollectionManager collectionManager, ArgsShell args) {
-        String[] history = collectionManager.getHistory();
+    public Response execute(CollectionManager collectionManager, ArgsShell args, UserData user) {
+        ArrayList<String> history = collectionManager.getHistory(user);
         Response response = new Response("Последние команды: ");
         StringBuilder data = new StringBuilder();
-        for (int i = 0; i < 14; i++) {
-            if (history[i] == null) break;
-            if (history[i + 1] == null) {
-                data.append(history[i]).append(".");
-                break;
-            }
-            data.append(history[i]).append(", ");
+        for (int i = 0; i < history.size(); i++) {
+            if (i != history.size() - 1) data.append(history.get(i)).append(", ");
+            else data.append(history.get(i)).append(".");
         }
-        if (history[14] != null) data.append(history[14]).append(".");
         response.setData(String.valueOf(data));
-        collectionManager.addToHistory(this);
+        collectionManager.addToHistory(this, user);
         return response;
     }
 }

@@ -1,5 +1,6 @@
 package classes.commands;
 
+import classes.dataBase.UserData;
 import classes.model.StudyGroup;
 import classes.shells.ArgsShell;
 import classes.shells.Response;
@@ -23,17 +24,17 @@ public class Insert extends AbstractCommand implements IsNeedInput {
     }
 
     @Override
-    public Response execute(CollectionManager collectionManager, ArgsShell args) {
+    public Response execute(CollectionManager collectionManager, ArgsShell args, UserData user) {
         int key = (int) args.getArguments()[0];
         StudyGroup group = (StudyGroup) args.getArguments()[1];
         group.checkId();
         Response response = new Response();
         try {
-            response.setData(collectionManager.insert(key, group));
+            response.setData(collectionManager.insert(key, group, user));
         } catch (WrongArgumentException e) {
             response.setData(e.getMessage());
         }
-        collectionManager.addToHistory(this);
+        collectionManager.addToHistory(this, user);
         return response;
 
     }

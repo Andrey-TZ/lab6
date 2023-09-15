@@ -1,5 +1,6 @@
 package classes.commands;
 
+import classes.dataBase.UserData;
 import classes.model.StudyGroup;
 import classes.shells.ArgsShell;
 import classes.shells.Response;
@@ -23,11 +24,11 @@ public class Update extends AbstractCommand implements IsNeedInput {
     }
 
     @Override
-    public Response execute(CollectionManager collectionManager, ArgsShell args) {
+    public Response execute(CollectionManager collectionManager, ArgsShell args, UserData user) {
         int id = (int) args.getArguments()[0];
         StudyGroup group = (StudyGroup) args.getArguments()[1];
-        collectionManager.addToHistory(this);
-        return new Response(collectionManager.update(id, group));
+        collectionManager.addToHistory(this, user);
+        return new Response(collectionManager.update(id, group, user));
     }
 
     @Override

@@ -30,7 +30,7 @@ public class CommandManager {
         commands.put("remove_key", new RemoveKey());
         commands.put("remove_lower", new RemoveLower());
         commands.put("remove_lower_key", new RemoveLowerKey());
-        commands.put("save", new Save());
+//        commands.put("save", new Save());
         commands.put("show", new Show());
         commands.put("update", new Update());
 

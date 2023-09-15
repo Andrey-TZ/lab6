@@ -1,5 +1,6 @@
 package classes.commands;
 
+import classes.dataBase.UserData;
 import classes.shells.ArgsShell;
 import classes.shells.Request;
 import classes.shells.Response;
@@ -29,12 +30,12 @@ public class ExecuteScript extends AbstractCommand implements IsNeedInput {
     }
 
     @Override
-    public Response execute(CollectionManager collectionManager, ArgsShell args) {
-        collectionManager.addToHistory(this);
+    public Response execute(CollectionManager collectionManager, ArgsShell args, UserData user) {
+        collectionManager.addToHistory(this, user);
         Response response = new Response();
         for (Object data : args.getArguments()) {
             Request request = (Request) data;
-            response.addData(request.getCommand().execute(collectionManager, request.getArguments()));
+            response.addData(request.getCommand().execute(collectionManager, request.getArguments(), user));
         }
         return response;
     }
@@ -61,9 +62,6 @@ public class ExecuteScript extends AbstractCommand implements IsNeedInput {
                 data.add(request);
             }
             return data.toArray();
-
-//        } catch (FileNotFoundException e) {
-//            throw new WrongArgumentException("Файл с именем \"" + args[1] + "\" ней найден");
         } catch (NoPermissionException e) {
             throw new WrongArgumentException(e.getMessage());
         } catch (IOException e) {

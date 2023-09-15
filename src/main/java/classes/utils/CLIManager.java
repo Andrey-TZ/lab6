@@ -21,7 +21,7 @@ public class CLIManager {
     private static final Scanner scanner = new Scanner(System.in);
 
     /**
-     * Read Strong from terminal.
+     * Read String from terminal.
      *
      * @return CLI read result. Can be empty string.
      */
@@ -30,22 +30,6 @@ public class CLIManager {
         return scanner.nextLine();
     }
 
-    public static Path requestFilePath(){
-        Path path;
-        while (true)
-        {
-            try {
-                System.out.print("Введите путь к файлу с коллекцией: ");
-                path = Paths.get(requestString());
-                if (!Files.exists(path)) throw new FileNotFoundException("Файл \"" + path + "\" не найден");
-                if (!Files.isReadable(path)) throw new NoPermissionException("Нет получается прочитать " + path );
-                if (!Files.isWritable(path)) throw new NoPermissionException("Не получается записать данные в " + path);
-                return path;
-            } catch (NoPermissionException | FileNotFoundException e) {
-                System.out.println( e.getMessage());
-            }
-        }
-    }
     /**
      * Read float from terminal.
      *
@@ -55,7 +39,7 @@ public class CLIManager {
     private static Float requestFloat() throws NumberFormatException {
         if (!scanner.hasNextLine()) System.exit(0);
         String number = scanner.nextLine();
-        if (number.length() == 0) return null;
+        if (number.isEmpty()) return null;
         return Float.parseFloat(number);
     }
 
@@ -68,7 +52,7 @@ public class CLIManager {
     private static Long requestLong() throws NumberFormatException {
         if (!scanner.hasNextLine()) System.exit(0);
         String number = scanner.nextLine();
-        if (number.length() == 0) return null;
+        if (number.isEmpty()) return null;
         return Long.parseLong(number);
     }
 
@@ -77,7 +61,7 @@ public class CLIManager {
         while (true) {
             if (!scanner.hasNextLine()) System.exit(0);
             String number = scanner.nextLine();
-            if (number.length() == 0) return null;
+            if (number.isEmpty()) return null;
             try {
                 value = Integer.parseInt(number);
                 break;
@@ -243,9 +227,10 @@ public class CLIManager {
         // request name
         while (true) {
             try {
-                System.out.print("Введите имя админа групы: ");
+                System.out.print("Введите имя админа группы: ");
                 String name = requestString().toLowerCase();
                 if (name.isEmpty()) return null;
+                System.out.println(1000);
                 adminGroup.setName(name.substring(0, 1).toUpperCase() + name.substring(1));
                 break;
             } catch (EmptyFieldException e) {

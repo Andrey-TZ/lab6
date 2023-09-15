@@ -1,5 +1,6 @@
 package classes.commands;
 
+import classes.dataBase.UserData;
 import classes.model.StudyGroup;
 import classes.shells.ArgsShell;
 import classes.shells.Response;
@@ -21,8 +22,8 @@ public class Show extends AbstractCommand {
     }
 
     @Override
-    public Response execute(CollectionManager collectionManager, ArgsShell args) {
-        collectionManager.addToHistory(this);
+    public Response execute(CollectionManager collectionManager, ArgsShell args, UserData user) {
+        collectionManager.addToHistory(this, user);
         Collection<StudyGroup> elements= collectionManager.show();
         if (elements.size() == 0) return new Response("В коллекции ещё нет ни одного элемента");
         Response response = new Response();

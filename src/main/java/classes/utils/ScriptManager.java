@@ -27,21 +27,18 @@ public class ScriptManager {
      *
      * @return float
      * @throws IOException             file can't be reading
-     * @throws NumberFormatException
-     * @throws NoSuchElementException
-     * @throws NotEnoughLinesException
      */
     public Float requestFloat() throws IOException, NumberFormatException, NoSuchElementException, NotEnoughLinesException {
         String line = reader.readLine();
         if (line == null) throw new NotEnoughLinesException("Не хватило строки с числом с плавающей точкой");
-        if (line.length() == 0) return null;
+        if (line.isEmpty()) return null;
         return Float.parseFloat(line);
     }
 
     public Long requestLong() throws IOException, NumberFormatException, NotEnoughLinesException {
         String line = reader.readLine();
         if (line == null) throw new NotEnoughLinesException("Не хватило строки с числом с плавающей точкой");
-        if (line.length() == 0) return null;
+        if (line.isEmpty()) return null;
         return Long.parseLong(line);
     }
 
@@ -68,7 +65,7 @@ public class ScriptManager {
     private Semester requestSemester() throws NotEnoughLinesException, IOException {
         try {
             String option = requestString().strip().toLowerCase();
-            if (option.length() == 0) return null;
+            if (option.isEmpty()) return null;
             return Semester.valueOf(option.toUpperCase());
         } catch (IllegalArgumentException | NotEnoughLinesException e) {
             return null;
@@ -80,7 +77,7 @@ public class ScriptManager {
         while (true) {
             try {
                 String option = requestString().strip().toLowerCase();
-                if (option.length() == 0) continue;
+                if (option.isEmpty()) continue;
                 return FormOfEducation.valueOf(option.toUpperCase());
             } catch (IllegalArgumentException e) {
                 continue;

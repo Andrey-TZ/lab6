@@ -1,5 +1,6 @@
 package classes.commands;
 
+import classes.dataBase.UserData;
 import classes.shells.ArgsShell;
 import classes.shells.Response;
 import exceptions.NotEnoughArgumentsException;
@@ -21,8 +22,8 @@ public class Save extends AbstractCommand{
     }
 
     @Override
-    public Response execute(CollectionManager collectionManager, ArgsShell args)  {
-        collectionManager.addToHistory(this);
+    public Response execute(CollectionManager collectionManager, ArgsShell args, UserData user)  {
+        collectionManager.addToHistory(this, user);
         return new Response("Коллекция успешно сохранена");
     }
 }

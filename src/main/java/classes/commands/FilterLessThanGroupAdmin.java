@@ -1,5 +1,6 @@
 package classes.commands;
 
+import classes.dataBase.UserData;
 import classes.model.Person;
 import classes.model.StudyGroup;
 import classes.shells.ArgsShell;
@@ -25,8 +26,8 @@ public class FilterLessThanGroupAdmin extends AbstractCommand implements IsNeedI
     }
 
     @Override
-    public Response execute(CollectionManager collectionManager, ArgsShell args) {
-        collectionManager.addToHistory(this);
+    public Response execute(CollectionManager collectionManager, ArgsShell args, UserData user) {
+        collectionManager.addToHistory(this, user);
         Person groupAdmin = (Person) args.getArguments()[0];
         if (collectionManager.isEmpty()) {
             return new Response("Нет элементов для сравнения");

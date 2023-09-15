@@ -1,5 +1,6 @@
 package classes.commands;
 
+import classes.dataBase.UserData;
 import classes.model.StudyGroup;
 import classes.shells.ArgsShell;
 import classes.shells.Response;
@@ -28,10 +29,10 @@ public class RemoveLower extends AbstractCommand implements IsNeedInput{
     }
 
     @Override
-    public Response execute(CollectionManager collectionManager, ArgsShell args) {
+    public Response execute(CollectionManager collectionManager, ArgsShell args, UserData user) {
         StudyGroup group = (StudyGroup) args.getArguments()[0];
-        int deleted = collectionManager.removeLower(group);
-        collectionManager.addToHistory(this);
+        int deleted = collectionManager.removeLower(group, user);
+        collectionManager.addToHistory(this, user);
         if(deleted == 0) return new Response("Элементов для удаления нет");
         return new Response("Удалено элементов: " + deleted);
     }
