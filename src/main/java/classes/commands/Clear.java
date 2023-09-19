@@ -22,10 +22,10 @@ public class Clear extends AbstractCommand {
 
     @Override
     public Response execute(CollectionManager collectionManager, ArgsShell args, UserData user) {
-        collectionManager.clear(user);
+        String result = collectionManager.clear(user);
         collectionManager.addToHistory(this, user);
         Response response = new Response();
-        response.setData("Коллекция успешно очищена");
+        response.setData(result);
         return response;
     }
 }

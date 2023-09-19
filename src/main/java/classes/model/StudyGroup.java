@@ -71,6 +71,10 @@ public class StudyGroup implements Comparable<StudyGroup>, Serializable {
         this.id = id;
     }
 
+    public void setUser(String login){
+        this.user = login;
+    }
+
     public int getId() {
         return id;
     }

@@ -184,6 +184,7 @@ public class CollectionManager {
         int id = DBManager.insertStudyGroup(key, group.getName(), group.getCoordinates().getX(), group.getCoordinates().getY(), Date.valueOf(group.getCreationDate().toLocalDate()), group.getStudentsCount(), group.getFormOfEducation().getId(), semester, admin, user.getLogin());
         if (id != 0) {
             group.setId(id);
+            group.setUser(user.getLogin());
             groups.put(key, group);
             return "Элемент успешно добавлен";
         }
@@ -224,12 +225,21 @@ public class CollectionManager {
     /**
      * Delete all elements from collection for currentUser
      */
-    public void clear(UserData user) {
+    public String clear(UserData user) {
         String login = user.getLogin();
-        groups.forEach((k, v) -> {
-            if (v.getUser().equals(login)) removeByKey(k, user);
+        Integer count = DBManager.clear(login);
 
-        });
+        if (count == 0) {
+            return "Ни один элемент не удален";
+        }
+        Set<Integer> keys = groups.keySet();
+        for (Integer key : keys
+        ) {
+            if(groups.get(key).getUser().equals(login)){
+                groups.remove(key);
+            }
+        }
+        return "Удалено элементов " + count;
     }
 
 
@@ -240,7 +250,8 @@ public class CollectionManager {
      */
     public int removeLower(StudyGroup group, UserData user) {
         int score = 0;
-        for (Integer key : groups.keySet()) {
+        Set<Integer> keys = groups.keySet();
+        for (Integer key : keys) {
             if (groups.get(key).compareTo(group) < 0 && user.getLogin().equals(groups.get(key).getUser())) {
                 if (DBManager.removeStudyGroup(groups.get(key).getId()) == 1) {
                     groups.remove(key);
@@ -333,8 +344,7 @@ public class CollectionManager {
                 }
                 historyForCurrentUser.add(command.getName());
             }
-        }
-        finally {
+        } finally {
             this.writeLock.unlock();
         }
 

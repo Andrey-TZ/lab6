@@ -18,7 +18,7 @@ public class Client {
 
     public static void main(String[] args) throws InterruptedException {
         int port = 5678;
-        String host = "localhost";
+        String host = "helios.cs.ifmo.ru";
         connect(host, port);
     }
 

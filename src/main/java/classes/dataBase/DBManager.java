@@ -61,7 +61,7 @@ public class DBManager {
         Connection dbConnection = null;
         try {
             Class.forName("org.postgresql.Driver");
-            String url = "jdbc:postgresql://db:5432/studs";
+            String url = "jdbc:postgresql://helios.cs.ifmo.ru:5432/studs";
             String login = "s367996";
             String password = "TVtVhpynrN7CfCqJ";
             Properties props = new Properties();
@@ -273,7 +273,7 @@ public class DBManager {
     public static Integer removeLowerKeys(int key, String login) {
         try (Connection dbConnection = getDBConnection();
              PreparedStatement statement1 = dbConnection.prepareStatement("""
-                     Delete From studs.public.admins WHERE admin_id in (SELECT admin_id FROM study_groups WHERE study_groups.key < ? AND login = ?);
+                     Delete From admins WHERE admin_id in (SELECT admin_id FROM study_groups WHERE study_groups.key < ? AND login = ?);
                                           
                      """);
              PreparedStatement statement2 = dbConnection.prepareStatement("DELETE FROM study_groups WHERE study_groups.key < ? and login = ?;")) {
@@ -283,6 +283,18 @@ public class DBManager {
             statement2.setString(2, login);
             statement1.executeUpdate();
             return statement2.executeUpdate();
+        } catch (SQLException e) {
+            return 0;
+        }
+    }
+
+    public static Integer clear(String login) {
+        try (Connection dbConnection = getDBConnection();
+             PreparedStatement statement = dbConnection.prepareStatement("""
+                                 Delete From study_groups WHERE login = ?;
+                     """)) {
+            statement.setString(1, login);
+            return statement.executeUpdate();
         } catch (SQLException e) {
             return 0;
         }
